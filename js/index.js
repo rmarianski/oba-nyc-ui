@@ -147,7 +147,7 @@ function makeStopElement(record) {
 }
 
 function makeRouteElement(record) {
-  return jQuery('<div id=record-"' + record.id + '" class="route"></div>')
+  return jQuery('<div id="route-' + record.id + '" class="route"></div>')
     .append('<a class="control addToMap" href="#">Add To Map</a>')
     .append('<p class="name">' + record.name + '</p>')
     .append('<p class="description">' + record.description + '</p>')
