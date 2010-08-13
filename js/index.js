@@ -76,6 +76,13 @@ function handleAddToMap(e) {
   var resultDiv = jQuery(this).parent("div");
   var routeIdStr = resultDiv.attr("id");
   var routeId = routeIdStr.substring("route-".length);
+
+  // this shouldn't have happened
+  // this means that the filter didn't catch a duplicate route
+  if (routeId in routeShapes) {
+    return;
+  }
+
   var clonedDiv = resultDiv.clone();
   var controlLink = clonedDiv.find("a.control");
   controlLink.removeClass("addToMap");
@@ -170,6 +177,11 @@ function populateSearchResults(json, searchResultsList) {
       searchResultsList.append(jQuery("<li></li>").append(makeStopElement(record)));
       anyResults = true;
     } else if (record.type === "route") {
+      // verify that we don't give a route search result
+      // that's already displayed on the map
+      if (record.id in routeShapes) {
+        return;
+      }
       searchResultsList.append(jQuery("<li></li>").append(makeRouteElement(record)));
       anyResults = true;
     }
