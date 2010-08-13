@@ -1,0 +1,8 @@
+body, p, ul, li, h1, h2, a {
+	padding: 0px;
+	margin: 0px;
+}
+
+ul li {
+	list-style-type: none;
+}

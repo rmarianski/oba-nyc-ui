@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+	<title>NYC Bus Tracker</title>
+
+	<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen,print"/>
+	<link rel="stylesheet" href="css/screen.css" type="text/css" media="screen,print"/>
+	<link rel="stylesheet" href="css/tracker.css" type="text/css" media="screen,print"/>
+
+	<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+</head>
+<body>
+	<div id="page">
+		<div id="header">
+			<h1>A City Transit Agency</h1>
+
+			<ul>
+				<li><a href="tracker.html">Tracker</a></li>
+				<li><a href="help.html">Help</a></li>
+			</ul>
+		</div>
+
+		<div id="content">
+			<div id="sidebar">
+				<div id="search">
+					<form action="search.php">
+						<p>
+							<label>Search for:</label>
+							<input type="text" name="q"/>
+						</p>
+
+						<p class="small">TIP: Enter an intersection, bus route or bus stop number.</p>
+					</form>
+
+          <div id="example-searches">
+					  <p>
+					  	Example Searches:
+					  </p>
+
+					  <ul>
+					  	<li><a href="#">14th and broadway</a></li>
+					  	<li><a href="#">14AVEC0001</a></li>
+					  	<li><a href="#">M14D</a></li>
+					  </ul>
+          </div>
+
+          <ul id="search-results">
+          </ul>
+				</div>
+
+				<div id="current_layers">
+					<p class="header">
+            <a href="#">Displayed Routes (<span id="n-displayed-routes">0</span>)</a>
+					</p>
+
+          <div id="displayed-routes">
+					  <p id="no-routes-displayed-message">
+					  	You haven't added any routes to the map yet.
+					  </p>
+            <ul id="displayed-routes-list">
+            </ul>
+          </div>
+				</div>
+			</div>
+
+			<div id="map">
+			</div>
+		</div>
+
+    <!--div id="debug">
+      <a href="#">latlngs</a>
+    </div-->
+
+		<div id="footer">
+			<ul class="first">
+				<li><a href="#">About</a></li>
+				<li><a href="#">Contact Us</a></li>
+			</ul>
+
+			<ul>
+				<li><a href="#">Text Only/Mobile</a></li>
+				<li><a href="#">Developer API</a></li>
+			</ul>
+
+			<p>
+				&copy; 2010, A City Transit Agency
+			</p>	
+		</div>
+	</div>
+</body>
+</html>

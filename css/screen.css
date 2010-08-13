@@ -1,0 +1,118 @@
+body {
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	background-color: #999999;
+}
+
+a {
+	text-decoration: none;
+	color: #444444;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+	
+#page {
+	width: 960px;
+	margin-left: auto;
+	margin-right: auto;
+
+	border: 1px solid #666666;
+	border-top: none;
+
+	background-color: #FFFFFF;
+}
+
+#header {
+	background-image: url('http://www.mta.info/template/images/topbar_background.png');
+	background-repeat: repeat-x;
+
+	height: 100px;
+	position: relative;
+}
+
+#header h1 {
+	padding: 20px;
+	padding-top: 30px;
+
+	height: 18px;
+	font-size: 18px;
+	color: #FFFFFF;
+}
+
+#header ul {
+	position: absolute;
+	bottom: 0px;
+	height: 32px;
+	width: 100%;
+	overflow-y: hidden;
+
+	background-image: url('img/nav_background.png');
+	background-repeat: repeat-x;
+}
+
+#header ul li {
+	float: left;
+	height: 32px;
+
+	padding: 9px;
+	padding-left: 15px;
+	padding-right: 15px;
+
+	border-right: 1px solid #ACACAC;
+}
+
+#header ul li a {
+	font-size: 12px;
+
+	color: #444444;
+}
+
+#content #sidebar {
+	width: 300px;
+	height: 100%;
+
+	float: left;
+}
+
+#content p, #content ul {
+	padding: 15px;
+	padding-bottom: 0px;
+}
+
+#content ul {
+	padding-top: 5px;
+}
+
+#footer {
+	padding: 10px;
+	padding-left: 15px;
+	padding-right: 15px;
+	clear: both;
+
+	font-size: 11px;
+
+	border-top: 1px solid #ACACAC;
+	background-color: #EFEFEF;
+	color: #333333;
+}
+
+#footer ul {
+	width: 100px;
+	float: left;
+}
+
+#footer ul li {
+	line-height: 150%;
+}
+
+#footer ul li a {
+	color: #444444;
+}
+
+#footer p {
+	padding-top: 20px;
+	height: 11px;
+	text-align: right;
+}
