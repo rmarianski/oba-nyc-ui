@@ -12,6 +12,7 @@ var map;
 // urls to fetch various data
 var routeShapeUrl = "/route.php";
 var stopsUrl = "/stops.php";
+var stopUrl = "/stop.php";
 
 // list of routes displayed on screen
 // kept here so we can reference them when removing overlays from the map
@@ -205,12 +206,31 @@ function addStopsToMap() {
     var stops = json.stops;
     for (var i = 0; i < stops.length; i++) {
       var stop = stops[i];
-      console.log(stop);
       stopShapes[stop.stopId] = stop.latlng
       var stopMarker = makeStopMarker(stop.stopId, stop.latlng);
+      addStopListener(stopMarker, stop.stopId);
       stopMarker.setMap(map);
     }
   });
+}
+
+function addStopListener(stopMarker, stopId) {
+  google.maps.event.addListener(stopMarker, "click", function(e) {
+    jQuery.getJSON(stopUrl, {stopId: stopId}, function(json) {
+      var stop = json.stop;
+      var stopContent = makeStopPopupContent(stop);
+      var popup = new google.maps.InfoWindow({
+        content: stopContent
+      });
+      popup.open(map, stopMarker);
+    });
+  });
+}
+
+function makeStopPopupContent(json) {
+  return ("<p>" + json.stopId + "</p>" +
+          "<p>" + json.lastUpdate + "</p>" +
+          "<p>" + json.description + "</p>");
 }
 
 function makeStopMarker(stopId, latlng) {
