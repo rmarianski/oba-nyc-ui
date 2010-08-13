@@ -16,6 +16,10 @@ var routeShapeUrl = "/route.php";
 // kept here so we can reference them when removing overlays from the map
 var routeShapes = {};
 
+// every time a route is added/removed, this count is updated
+// the html is updated to reflect its state too
+var numberOfDisplayedRoutes = 0;
+
 function createMap() {
 	var options = {
 		zoom: 15,
@@ -139,12 +143,12 @@ function handleRemoveFromMap(e) {
 
 function incrementDisplayedRoutes(offset) {
   var nDisplayedElement = jQuery("#n-displayed-routes");
-  var nDisplayed = nDisplayedElement.data("nDisplayed");
   var n = (typeof offset === "undefined") ? 1 : offset;
-  var newDisplayed = nDisplayed + n;
+  var curDisplayed = numberOfDisplayedRoutes;
+  var newDisplayed = curDisplayed + n;
   nDisplayedElement.text(newDisplayed);
-  nDisplayedElement.data("nDisplayed", newDisplayed);
-  return nDisplayed;
+  numberOfDisplayedRoutes = newDisplayed;
+  return curDisplayed;
 }
 
 function makeStopElement(record) {
@@ -193,17 +197,11 @@ function populateSearchResults(json, searchResultsList) {
   searchResultsList.hide().fadeIn();
 }
 
-function initializeDisplayedRoutes() {
-  // store the number of displayed routes
-  jQuery("#n-displayed-routes").data('nDisplayed', 0);
-}
-
 jQuery(document).ready(function() {
   createMap();
   addSearchBehavior();
   addExampleSearchBehavior();
   addSearchControlBehavior();
-  initializeDisplayedRoutes();
 
 //XXX debugging
 //  jQuery("#debug a").click(function() {
