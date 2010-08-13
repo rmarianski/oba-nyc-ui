@@ -17,8 +17,10 @@ var stopUrl = "/stop.php";
 // list of routes displayed on screen
 // kept here so we can reference them when removing overlays from the map
 var routeShapes = {};
-// stop to latlangs map
+// stopid to latlangs map - necessary?
 var stopShapes = {};
+// stopid to stopMarkers
+var stopMarkers = {};
 
 // every time a route is added/removed, this count is updated
 // the html is updated to reflect its state too
@@ -76,7 +78,15 @@ function addSearchControlBehavior() {
 }
 
 function handleShowOnMap(e) {
-  var stopId = jQuery(this).parent("div").attr("id");
+  var stopIdStr = jQuery(this).parent("div").attr("id");
+  var stopId = stopIdStr.substring("stop-".length);
+  var stopMarker = stopMarkers[stopId];
+  if (!stopMarker)
+    return false;
+
+  // showing the popup automatically zooms to it
+  showPopup(stopMarker, stopId);
+
   return false;
 }
 
@@ -208,22 +218,27 @@ function addStopsToMap() {
       var stop = stops[i];
       stopShapes[stop.stopId] = stop.latlng
       var stopMarker = makeStopMarker(stop.stopId, stop.latlng);
+      stopMarkers[stop.stopId] = stopMarker;
       addStopListener(stopMarker, stop.stopId);
       stopMarker.setMap(map);
     }
   });
 }
 
-function addStopListener(stopMarker, stopId) {
-  google.maps.event.addListener(stopMarker, "click", function(e) {
-    jQuery.getJSON(stopUrl, {stopId: stopId}, function(json) {
-      var stop = json.stop;
-      var stopContent = makeStopPopupContent(stop);
-      var popup = new google.maps.InfoWindow({
-        content: stopContent
-      });
-      popup.open(map, stopMarker);
+function showPopup(stopMarker, stopId) {
+  jQuery.getJSON(stopUrl, {stopId: stopId}, function(json) {
+    var stop = json.stop;
+    var stopContent = makeStopPopupContent(stop);
+    var popup = new google.maps.InfoWindow({
+      content: stopContent
     });
+    popup.open(map, stopMarker);
+  });
+}
+
+function addStopListener(stopMarker, stopId) {
+  google.maps.event.addListener(stopMarker, "click", function() {
+    showPopup(stopMarker, stopId);
   });
 }
 
