@@ -9,12 +9,15 @@ var map;
 // reference to the map on the screen
 //var map;
 
-// url to query to fetch shapes for routes
+// urls to fetch various data
 var routeShapeUrl = "/route.php";
+var stopsUrl = "/stops.php";
 
 // list of routes displayed on screen
 // kept here so we can reference them when removing overlays from the map
 var routeShapes = {};
+// stop to latlangs map
+var stopShapes = {};
 
 // every time a route is added/removed, this count is updated
 // the html is updated to reflect its state too
@@ -197,11 +200,33 @@ function populateSearchResults(json, searchResultsList) {
   searchResultsList.hide().fadeIn();
 }
 
+function addStopsToMap() {
+  jQuery.getJSON(stopsUrl, {}, function(json) {
+    var stops = json.stops;
+    for (var i = 0; i < stops.length; i++) {
+      var stop = stops[i];
+      console.log(stop);
+      stopShapes[stop.stopId] = stop.latlng
+      var stopMarker = makeStopMarker(stop.stopId, stop.latlng);
+      stopMarker.setMap(map);
+    }
+  });
+}
+
+function makeStopMarker(stopId, latlng) {
+  var marker = new google.maps.Marker({
+      position: new google.maps.LatLng(latlng[0], latlng[1]),
+      title: stopId
+      });
+  return marker;
+}
+
 jQuery(document).ready(function() {
   createMap();
   addSearchBehavior();
   addExampleSearchBehavior();
   addSearchControlBehavior();
+  addStopsToMap();
 
 //XXX debugging
 //  jQuery("#debug a").click(function() {
