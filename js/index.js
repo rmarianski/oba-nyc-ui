@@ -1,9 +1,6 @@
 //XXX global map for testing in browser
 var map;
 
-//XXX debugging
-//var latLngs = [];
-
 (function() {
 
 // reference to the map on the screen
@@ -13,18 +10,77 @@ var map;
 var routeShapeUrl = "/route.php";
 var stopsUrl = "/stops.php";
 var stopUrl = "/stop.php";
+var vehiclesUrl = "/vehicles.php";
+var vehicleUrl = "/vehicle.php";
 
 // list of routes displayed on screen
 // kept here so we can reference them when removing overlays from the map
 var routes = (function() {
 
   var routeIdToShapes = {};
+  var routeIdsToVehicleMarkers = {};
   var numberOfRoutes = 0;
-  var nDisplayedElement;
+  var nDisplayedElement = null;
+  var vehicleMarkers = {};
+  var isVehiclePolling = false;
 
   jQuery(document).ready(function() {
     nDisplayedElement = jQuery("#n-displayed-routes");
   });
+
+  var requestRoutes = function(routeIds) {
+    var routesToSerialize;
+    if (typeof routeIds === "undefined") {
+      // to be more efficient we can store the list of all route ids
+      // separately in memory, yagni now
+      routesToSerialize = [];
+      for (var routeId in routeIdToShapes)
+        routesToSerialize.push(routeId);
+    } else {
+      routesToSerialize = routeIds;
+    }
+    jQuery.getJSON(vehiclesUrl, {routeIds: routesToSerialize}, function(json) {
+      var vehicles = json.vehicles;
+      if (!vehicles)
+        return;
+
+      // helper function to add an element to a map where values are lists
+      var addVehicleMarkerToRouteMap = function(routeId, vehicleMarker) {
+        var vehicles = routeIdsToVehicleMarkers[routeId];
+        if (vehicles) {
+          vehicles.push(vehicleMarker);
+        } else {
+          vehicles = [vehicleMarker];
+          routeIdsToVehicleMarkers[routeId] = vehicles;
+        }
+      };
+
+      jQuery.each(vehicles, function(i, vehicleSection) {
+        var routeId = vehicleSection.routeId;
+        jQuery.each(vehicleSection.vehicles, function(i, vehicle) {
+          var vehicleMarker = vehicleMarkers[vehicle.vehicleId];
+          if (vehicleMarker) {
+            var latlng = new google.maps.LatLng(vehicle.latlng[0], vehicle.latlng[1]);
+            vehicleMarker.setPosition(latlng);
+            if (!vehicleMarker.getMap()) {
+              // route was added, removed, and added back
+              // the markers already exist, but have just been removed from the map
+              // we can reuse them and we only have to set their map reference
+              vehicleMarker.setMap(map);
+              addVehicleMarkerToRouteMap(routeId, vehicleMarker);
+            }
+          } else {
+            vehicleMarker = makeVehicleMarker(vehicle.vehicleId, vehicle.latlng);
+            vehicleMarkers[vehicle.vehicleId] = vehicleMarker;
+            addVehicleListener(vehicleMarker, vehicle.vehicleId);
+            vehicleMarker.setMap(map);
+
+            addVehicleMarkerToRouteMap(routeId, vehicleMarker);
+          }
+        });
+      });
+    });
+  };
 
   return {
     containsRoute: function(routeId) {
@@ -33,10 +89,20 @@ var routes = (function() {
     // add and remove shapes also take care of updating the display
     // if this is a problem we can factor this back out
     addRoute: function(routeId, routeShape) {
+      // update current state
       routeIdToShapes[routeId] = routeShape;
       numberOfRoutes += 1;
+
+      // update text info on screen
       jQuery("#no-routes-displayed-message").remove();
       nDisplayedElement.text(numberOfRoutes);
+
+      // always make an initial request just for this route
+      requestRoutes([routeId]);
+
+      // update the timer task
+      //if (!isVehiclePolling) {
+      //}
     },
     removeRoute: function(routeId) {
       var shape = routeIdToShapes[routeId];
@@ -46,6 +112,13 @@ var routes = (function() {
         shape.setMap(null);
       }
       nDisplayedElement.text(numberOfRoutes);
+      var vehicles = routeIdsToVehicleMarkers[routeId];
+      if (vehicles) {
+        jQuery.each(vehicles, function(i, vehicleMarker) {
+          vehicleMarker.setMap(null);
+        });
+        delete routeIdsToVehicleMarkers[routeId];
+      }
     },
     anyRoutes: function() {
       return numberOfRoutes > 0;
@@ -68,9 +141,10 @@ function createMap() {
 	map = new google.maps.Map(document.getElementById("map"), options);
 
   // for debugging
-//  google.maps.event.addListener(map, "click", function(e) {
-//    latLngs.push(e.latLng);
-//  });
+  google.maps.event.addListener(map, "click", function(e) {
+    if (console && console.log)
+      console.log(e.latLng.lat() + "," + e.latLng.lng());
+  });
 
   return map;
 }
@@ -116,7 +190,7 @@ function handleShowOnMap(e) {
     return false;
 
   // showing the popup automatically zooms to it
-  showPopup(stopMarker, stopId);
+  showStopPopup(stopMarker, stopId);
 
   return false;
 }
@@ -226,18 +300,21 @@ function populateSearchResults(json, searchResultsList) {
 function addStopsToMap() {
   jQuery.getJSON(stopsUrl, {}, function(json) {
     var stops = json.stops;
-    for (var i = 0; i < stops.length; i++) {
-      var stop = stops[i];
+    if (!stops)
+      return;
+    jQuery.each(stops, function(i, stop) {
       stopShapes[stop.stopId] = stop.latlng
       var stopMarker = makeStopMarker(stop.stopId, stop.latlng);
       stopMarkers[stop.stopId] = stopMarker;
       addStopListener(stopMarker, stop.stopId);
       stopMarker.setMap(map);
-    }
+    });
   });
 }
 
-function showPopup(stopMarker, stopId) {
+// XXX we have a lot of duplication for creating stop/vehicle markers
+// should factor out the similarities to cut down on the code
+function showStopPopup(stopMarker, stopId) {
   jQuery.getJSON(stopUrl, {stopId: stopId}, function(json) {
     var stop = json.stop;
     var stopContent = makeStopPopupContent(stop);
@@ -248,9 +325,26 @@ function showPopup(stopMarker, stopId) {
   });
 }
 
+function showVehiclePopup(vehicleMarker, vehicleId) {
+  jQuery.getJSON(vehicleUrl, {vehicleId: vehicleId}, function(json) {
+    var vehicle = json.vehicle;
+    var vehicleContent = makeVehiclePopupContent(vehicle);
+    var popup = new google.maps.InfoWindow({
+      content: vehicleContent
+    });
+    popup.open(map, vehicleMarker);
+  });
+}
+
 function addStopListener(stopMarker, stopId) {
   google.maps.event.addListener(stopMarker, "click", function() {
-    showPopup(stopMarker, stopId);
+    showStopPopup(stopMarker, stopId);
+  });
+}
+
+function addVehicleListener(vehicleMarker, vehicleId) {
+  google.maps.event.addListener(vehicleMarker, "click", function() {
+    showVehiclePopup(vehicleMarker, vehicleId);
   });
 }
 
@@ -258,6 +352,11 @@ function makeStopPopupContent(json) {
   return ("<p>" + json.stopId + "</p>" +
           "<p>" + json.lastUpdate + "</p>" +
           "<p>" + json.description + "</p>");
+}
+
+function makeVehiclePopupContent(json) {
+  return ("<p>" + json.vehicleId + "</p>" +
+          "<p>" + json.lastUpdate + "</p>");
 }
 
 function makeStopMarker(stopId, latlng) {
@@ -268,23 +367,21 @@ function makeStopMarker(stopId, latlng) {
   return marker;
 }
 
+function makeVehicleMarker(vehicleId, latlng) {
+  // XXX use vehicle icons
+  var marker = new google.maps.Marker({
+      position: new google.maps.LatLng(latlng[0], latlng[1]),
+      title: vehicleId
+      });
+  return marker;
+}
+
 jQuery(document).ready(function() {
   createMap();
   addSearchBehavior();
   addExampleSearchBehavior();
   addSearchControlBehavior();
   addStopsToMap();
-
-//XXX debugging
-//  jQuery("#debug a").click(function() {
-//    console.log(latLngs);
-//    var ul = jQuery("<ul></ul>");
-//    jQuery.each(latLngs, function(i, x) {
-//      jQuery("<li></li>").append(x.lat() + "," + x.lng()).appendTo(ul);
-//    });
-//    jQuery("#debug").append(ul);
-//    return false;
-//  });
 
 });
 
