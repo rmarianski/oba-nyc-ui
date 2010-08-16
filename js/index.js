@@ -16,15 +16,46 @@ var stopUrl = "/stop.php";
 
 // list of routes displayed on screen
 // kept here so we can reference them when removing overlays from the map
-var routeShapes = {};
+var routes = (function() {
+
+  var routeIdToShapes = {};
+  var numberOfRoutes = 0;
+  var nDisplayedElement;
+
+  jQuery(document).ready(function() {
+    nDisplayedElement = jQuery("#n-displayed-routes");
+  });
+
+  return {
+    containsRoute: function(routeId) {
+      return routeId in routeIdToShapes;
+    },
+    // add and remove shapes also take care of updating the display
+    // if this is a problem we can factor this back out
+    addRoute: function(routeId, routeShape) {
+      routeIdToShapes[routeId] = routeShape;
+      numberOfRoutes += 1;
+      jQuery("#no-routes-displayed-message").remove();
+      nDisplayedElement.text(numberOfRoutes);
+    },
+    removeRoute: function(routeId) {
+      var shape = routeIdToShapes[routeId];
+      if (shape) {
+        delete routeIdToShapes[routeId];
+        numberOfRoutes -= 1;
+        shape.setMap(null);
+      }
+      nDisplayedElement.text(numberOfRoutes);
+    },
+    anyRoutes: function() {
+      return numberOfRoutes > 0;
+    },
+  };
+})();
 // stopid to latlangs map - necessary?
 var stopShapes = {};
 // stopid to stopMarkers
 var stopMarkers = {};
-
-// every time a route is added/removed, this count is updated
-// the html is updated to reflect its state too
-var numberOfDisplayedRoutes = 0;
 
 function createMap() {
 	var options = {
@@ -97,7 +128,7 @@ function handleAddToMap(e) {
 
   // this shouldn't have happened
   // this means that the filter didn't catch a duplicate route
-  if (routeId in routeShapes) {
+  if (routes.containsRoute(routeId)) {
     return;
   }
 
@@ -111,10 +142,6 @@ function handleAddToMap(e) {
   jQuery("<li></li>").append(clonedDiv)
     .appendTo(jQuery("#displayed-routes-list"))
     .hide().fadeIn();
-
-  var nDisplayed = incrementDisplayedRoutes();
-  if (nDisplayed === 0)
-    jQuery("#no-routes-displayed-message").remove();
 
   // fetch route from server and display on map
   jQuery.getJSON(routeShapeUrl, {routeId: routeId}, function(json) {
@@ -135,7 +162,7 @@ function handleAddToMap(e) {
 
     shape.setMap(map);
 
-    routeShapes[routeId] = shape;
+    routes.addRoute(routeId, shape);
   });
 
   return false;
@@ -146,23 +173,8 @@ function handleRemoveFromMap(e) {
   var routeIdStr = resultDiv.attr("id");
   var routeId = routeIdStr.substring("route-".length);
   resultDiv.fadeOut("fast", function() { resultDiv.remove(); });
-  incrementDisplayedRoutes(-1);
-
-  var shape = routeShapes[routeId];
-  shape.setMap(null);
-  delete routeShapes[routeId];
-
+  routes.removeRoute(routeId);
   return false;
-}
-
-function incrementDisplayedRoutes(offset) {
-  var nDisplayedElement = jQuery("#n-displayed-routes");
-  var n = (typeof offset === "undefined") ? 1 : offset;
-  var curDisplayed = numberOfDisplayedRoutes;
-  var newDisplayed = curDisplayed + n;
-  nDisplayedElement.text(newDisplayed);
-  numberOfDisplayedRoutes = newDisplayed;
-  return curDisplayed;
 }
 
 function makeStopElement(record) {
@@ -197,7 +209,7 @@ function populateSearchResults(json, searchResultsList) {
     } else if (record.type === "route") {
       // verify that we don't give a route search result
       // that's already displayed on the map
-      if (record.id in routeShapes) {
+      if (routes.containsRoute(record.id)) {
         return;
       }
       searchResultsList.append(jQuery("<li></li>").append(makeRouteElement(record)));
