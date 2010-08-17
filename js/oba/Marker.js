@@ -45,8 +45,6 @@ OBA.Marker = (function() {
     
        showPopup: function() {
         
-       
-       
        },
 
        create: function(json, map) {
@@ -63,6 +61,8 @@ OBA.Marker = (function() {
             
                 marker.setMap(map);
             }
+            
+            return marker;
        }
      }
 })();

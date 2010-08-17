@@ -1,10 +1,6 @@
 var OBA = window.OBA || {};
 
 OBA.Tracker = (function() {
-    // list of routes displayed on screen
-    // kept here so we can reference them when removing overlays from the map
-    var routes = OBA.RouteCollection;
-
     // reference to the map on the screen
     var map = null;
 
@@ -82,7 +78,7 @@ OBA.Tracker = (function() {
         } else if (record.type === "route") {
           // verify that we don't give a route search result
           // that's already displayed on the map
-          if (routes.containsRoute(record.id)) {
+          if (OBA.RouteCollection.containsRoute(record.id)) {
             return;
           }
 
@@ -93,17 +89,11 @@ OBA.Tracker = (function() {
       });
 
       if (!anyResults)
-        searchResultsList.append(jQuery("<li>No search results</li>"));
+        searchResultsList.append(jQuery("<li>There were no matches for your query.</li>"));
 
       searchResultsList.hide().fadeIn();
     }
-            
-    function addSearchControlBehavior() {
-      jQuery("#search .showOnMap").live("click", handleShowOnMap);
-      jQuery("#search .addToMap").live("click", handleAddToMap);
-      jQuery("#displayed-routes-list .removeFromMap").live("click", handleRemoveFromMap);
-    }
-            
+          
     function makeStopElement(record) {
       return jQuery('<div id="stop-' + record.id + '" class="stop"></div>')
         .append('<a class="control showOnMap" href="#">Show on Map</a>')
@@ -117,11 +107,19 @@ OBA.Tracker = (function() {
         .append('<p class="description">' + record.description + '</p>')
         .append('<p class="meta">' + record.lastUpdate + '</p>');
     }
+      
+    function addSearchControlBehavior() {
+      jQuery("#search .showOnMap").live("click", handleShowOnMap);
+      jQuery("#search .addToMap").live("click", handleAddToMap);
+      jQuery("#displayed-routes-list .removeFromMap").live("click", handleRemoveFromMap);
+    }
             
     function handleShowOnMap(e) {
+      var stopIdStr = jQuery(this).parent("div").attr("id");
+      var stopId = stopIdStr.substring("stop-".length);
       var stopMarker = stopMarkers[stopId];
     
-      if (!stopMarker)
+      if (! stopMarker)
         return false;
 
       // showing the popup automatically zooms to it
@@ -137,7 +135,7 @@ OBA.Tracker = (function() {
 
       // this shouldn't have happened
       // this means that the filter didn't catch a duplicate route
-      if (routes.containsRoute(routeId)) {
+      if (OBA.RouteCollection.containsRoute(routeId)) {
         return;
       }
 
@@ -152,30 +150,12 @@ OBA.Tracker = (function() {
         .appendTo(jQuery("#displayed-routes-list"))
         .hide().fadeIn();
 
-      // fetch route from server and display on map
       jQuery.getJSON(OBA.Config.routeShapeUrl, {routeId: routeId}, function(json) {
-        var coords = json.route && json.route.polyline;
-
-        if (!coords)
-          return;
-
-        var latlngs = jQuery.map(coords, function(x) {
-          return new google.maps.LatLng(x[0], x[1]);
-        });
-
-        var shape = new google.maps.Polyline({
-          path: latlngs,
-          strokeColor: "#FF0000",
-          strokeOpacity: 1.0,
-          strokeWeight: 2
-        });
-
-        shape.setMap(map);
-        routes.addRoute(routeId, shape);
-
+        OBA.RouteCollection.addRoute(routeId, json);
+        
         // update text info on screen
-        jQuery("#no-routes-displayed-message").remove();
-        jQuery("#n-displayed-routes").text(routes.numberOfRoutes);
+        jQuery("#no-routes-displayed-message").hide();
+        jQuery("#n-displayed-routes").text(OBA.RouteCollection.getCount());
       });
 
       return false;
@@ -187,31 +167,43 @@ OBA.Tracker = (function() {
       var routeId = routeIdStr.substring("route-".length);
 
       resultDiv.fadeOut("fast", function() { resultDiv.remove(); });
-      routes.removeRoute(routeId);
+      OBA.RouteCollection.removeRoute(routeId);
+
+      // update text info on screen
+      jQuery("#no-routes-displayed-message").show();
+      jQuery("#n-displayed-routes").text(OBA.RouteCollection.getCount());
 
       return false;
     }
 
-    // adds bus stops to map
     function addStopsToMap() {
       jQuery.getJSON(OBA.Config.stopsUrl, {}, function(json) {
         var stops = json.stops;
 
-        if (!stops)
+        if (! stops)
           return;
 
         jQuery.each(stops, function(i, stop) {
-          stopMarkers[stop.stopId] = OBA.Marker.create(stop, map);
+          stopMarkers[stop.stopId] = new OBA.Marker.create(stop);
         });
       });
     }
-     
-    jQuery(document).ready(function() {
-      createMap();
-      addSearchBehavior();
-      addSearchControlBehavior();
-      addExampleSearchBehavior();
-      addStopsToMap();
-    });
+    
+    return {
+        getMap: function() {
+            return map;
+        },
+        
+        initialize: function() {
+            createMap();
+
+            addSearchBehavior();
+            addSearchControlBehavior();
+            addExampleSearchBehavior();
+
+            addStopsToMap();
+        }
+    };
 })();
 
+jQuery(document).ready(OBA.Tracker.initialize);

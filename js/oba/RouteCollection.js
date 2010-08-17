@@ -62,8 +62,6 @@ OBA.RouteCollection = (function() {
               } else {
                 vehicleMarker = OBA.Marker.create(vehicle);
                 vehicleMarkers[vehicle.vehicleId] = vehicleMarker;
-                addVehicleListener(vehicleMarker, vehicle.vehicleId);
-                vehicleMarker.setMap(map);
 
                 addVehicleMarkerToRouteMap(routeId, vehicleMarker);
               }
@@ -79,9 +77,26 @@ OBA.RouteCollection = (function() {
     
         // add and remove shapes also take care of updating the display
         // if this is a problem we can factor this back out
-        addRoute: function(routeId, routeShape) {    
-          // update current state
-          routeIdToShapes[routeId] = routeShape;
+        addRoute: function(routeId, json) {    
+          var coords = json.route && json.route.polyline;
+            
+          if (! coords)
+            return;
+            
+          var latlngs = jQuery.map(coords, function(x) {
+              return new google.maps.LatLng(x[0], x[1]);
+          });
+            
+          var shape = new google.maps.Polyline({
+              path: latlngs,
+              strokeColor: "#FF0000",
+              strokeOpacity: 1.0,
+              strokeWeight: 2
+          });
+            
+          routeIdToShapes[routeId] = shape;
+          shape.setMap(OBA.Tracker.getMap());
+
           numberOfRoutes += 1;
 
           // always make an initial request just for this route
@@ -101,8 +116,6 @@ OBA.RouteCollection = (function() {
             shape.setMap(null);
           }
 
-          nDisplayedElement.text(numberOfRoutes);
-
           var vehicles = routeIdsToVehicleMarkers[routeId];
     
           if (vehicles) {
@@ -114,6 +127,10 @@ OBA.RouteCollection = (function() {
           }
         },
 
+        getCount: function() {
+            return numberOfRoutes;
+        },
+        
         anyRoutes: function() {
           return numberOfRoutes > 0;
         },
