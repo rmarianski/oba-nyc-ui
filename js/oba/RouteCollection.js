@@ -70,7 +70,8 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
                 var latlng = new google.maps.LatLng(vehicle.latlng[0], vehicle.latlng[1]);
   
                 vehicleMarker.updatePosition(latlng);
-                vehicleMarker.addMarker();
+                if (!vehicleMarker.isDisplayed())
+                    vehicleMarker.addMarker();
                 addVehicleMarkerToRouteMap(routeId, vehicleMarker);
               } else {
                 vehicleMarker = OBA.VehicleMarker(vehicle.vehicleId, vehicle.latlng, map);

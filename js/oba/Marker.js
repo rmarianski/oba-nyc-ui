@@ -28,6 +28,9 @@ OBA.Marker = function(entityId, latlng, map, popup, icon) {
         },
         updatePosition: function(latlng) {
             marker.setPosition(latlng);
+        },
+        isDisplayed: function() {
+            return marker.getMap() != null;
         }
     };
 };
