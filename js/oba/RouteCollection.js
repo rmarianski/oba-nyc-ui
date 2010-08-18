@@ -144,7 +144,6 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
         if (vehicles) {
           jQuery.each(vehicles, function(i, vehicleMarker) {
             vehicleMarker.removeMarker();
->>>>>>> 2db5281cdbe675af99cb72bcfe05e7871ad30fb4
           });
  
           delete routeIdsToVehicleMarkers[routeId];
