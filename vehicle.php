@@ -7,7 +7,7 @@ $routeId = "no route";
 if (strstr($vehicleId, "8213")) {
   $routeId = "M14D";
 } elseif (strstr($vehicleId, "8214")) {
-  $routeId = "M21C";
+  $routeId = "M14A";
 }
 
 $vehicle = array("vehicleId" => $vehicleId,

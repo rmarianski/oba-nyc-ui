@@ -19,7 +19,7 @@ foreach ($routeIds as $routeid) {
                         "vehicles" => $routeVehicles,
                         );
                         
-  } elseif ($routeid == "M21C") {
+  } elseif ($routeid == "M14A") {
     $routeVehicles = array(
         array("vehicleId" => "8214",
               "latlng" => array(40.71805415575759,-73.99085997351075),
