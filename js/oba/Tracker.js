@@ -59,13 +59,14 @@ OBA.Tracker = function() {
 
           anyResults = true;
         } else if (typeof record.routeId !== 'undefined') {
-          // verify that we don't give a route search result
-          // that's already displayed on the map
-          if (routeCollection.containsRoute(record.id)) {
-            return;
-          }
+          var routeElement = makeRouteElement(record);
+          searchResultsList.append(jQuery("<li></li>").append(routeElement));
 
-          searchResultsList.append(jQuery("<li></li>").append(makeRouteElement(record)));
+          if (routeCollection.containsRoute(record.routeId)) {
+              // if we already have the route displayed
+              // its control should be disabled
+              routeElement.find("a.control").addClass("disabled");
+          }
 
           anyResults = true;
         }
