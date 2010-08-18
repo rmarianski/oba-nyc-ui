@@ -38,6 +38,15 @@
   color: blue;
 }
 
+#sidebar .control.disabled {
+  color: gray;
+  text-decoration: none;
+}
+
+#sidebar a.control.disabled:hover {
+  cursor: default;
+}
+
 #sidebar #search .zoomToExtent {
     display: none;
 }
@@ -138,9 +147,5 @@ p.header a {
 #popup ul.notices li {
     padding-top: 5px;
     padding-bottom: 5px;
-    color: red;
-}
-
-.error {
     color: red;
 }

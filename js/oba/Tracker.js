@@ -136,31 +136,34 @@ OBA.Tracker = function() {
     }
 
     function handleAddToMap(e) {
-      var resultDiv = jQuery(this).parent("div");
+      var controlLink = jQuery(this);
+      var resultDiv = controlLink.parent("div");
       var routeIdStr = resultDiv.attr("id");
       var routeId = routeIdStr.substring("route-".length);
 
-      // this shouldn't have happened
-      // this means that the filter didn't catch a duplicate route
       if (routeCollection.containsRoute(routeId)) {
-        var alreadyExistsMessage = '<p class="error">Route already added to map</p>';
-        var errNode = jQuery(alreadyExistsMessage);
-        errNode.appendTo(resultDiv).hide().fadeIn();
-        setTimeout(function() { errNode.hide(function() { errNode.remove(); }); },
-                   1000);
         return false;
       }
 
+      // clone the search result element to place in the routes displayed list
       var clonedDiv = resultDiv.clone();
-      var controlLink = clonedDiv.find("a.control.addToMap");
-    
-      controlLink.removeClass("addToMap");
-      controlLink.addClass("removeFromMap");
-      controlLink.html("Remove from map");
+
+      // we can't have two elements with the same id
+      clonedDiv.attr("id", "displayedroute-" + routeId);
+
+      // update the control link class to alter the event fired
+      var clonedControlLink = clonedDiv.find("a.control.addToMap");
+      clonedControlLink.removeClass("addToMap");
+      clonedControlLink.addClass("removeFromMap");
+      clonedControlLink.html("Remove from map");
 
       jQuery("<li></li>").append(clonedDiv)
         .appendTo(jQuery("#displayed-routes-list"))
         .hide().fadeIn();
+
+      // also update the control link on the search result element to prevent the
+      // user from clicking on it twice
+      controlLink.addClass("disabled");
 
       jQuery.getJSON(OBA.Config.routeShapeUrl, {routeId: routeId}, function(json) {
         routeCollection.addRoute(routeId, json);
@@ -174,19 +177,24 @@ OBA.Tracker = function() {
     }
 
     function handleRemoveFromMap(e) {
-      var resultDiv = jQuery(this).parent("div");
-      var routeIdStr = resultDiv.attr("id");
-      var routeId = routeIdStr.substring("route-".length);
+      var displayRouteDiv = jQuery(this).parent("div");
+      var routeIdStr = displayRouteDiv.attr("id");
+      var routeId = routeIdStr.substring("displayedroute-".length);
 
-      resultDiv.fadeOut("fast", function() { resultDiv.remove(); });
+      displayRouteDiv.fadeOut("fast", function() { displayRouteDiv.remove(); });
       routeCollection.removeRoute(routeId);
 
+      // find the control link for the matching search result element
+      // and re-enable it
+      jQuery("#route-" + routeId + " a.control.disabled").removeClass("disabled");
+
       // update text info on screen
-      if(OBA.RouteCollection.getCount() === 0) {
+      var nDisplayedRoutes = routeCollection.getCount();
+      if (nDisplayedRoutes <= 0) {
           jQuery("#no-routes-displayed-message").show();
       }
-    
-      jQuery("#n-displayed-routes").text(OBA.RouteCollection.getCount());
+
+      jQuery("#n-displayed-routes").text(nDisplayedRoutes);
 
       return false;
     }
