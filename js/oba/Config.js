@@ -1,6 +1,8 @@
 var OBA = window.OBA || {};
 
 OBA.Config = {
+    debug: true,
+
     // urls to fetch various data
     routeShapeUrl: "route.php",
     stopsUrl: "stops.php",
@@ -8,6 +10,6 @@ OBA.Config = {
     vehiclesUrl:"vehicles.php",
     vehicleUrl: "vehicle.php",
 
-    debug: true
+    // milliseconds to wait in between polls for bus locations
+    pollingInterval: 5000
 };
-

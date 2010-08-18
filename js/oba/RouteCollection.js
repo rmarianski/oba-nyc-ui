@@ -25,6 +25,7 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
     var numberOfRoutes = 0;
     var vehicleMarkers = {};
     var isVehiclePolling = false;
+    var vehicleTimerId = null;
  
     var requestRoutes = function(routeIds) {
         var routesToSerialize;
@@ -81,6 +82,12 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
           }); // each vehicles
         }); // getJSON
     }; // requestRoutes
+
+    var vehiclePollingTask = function() {
+        if (!isVehiclePolling) return;
+        requestRoutes();
+        vehicleTimerId = setTimeout(vehiclePollingTask, OBA.Config.pollingInterval);
+    };
  
     return {
       getMap: function() { return map; },
@@ -117,8 +124,10 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
         requestRoutes([routeId]);
  
         // update the timer task
-        //if (!isVehiclePolling) {
-        //}
+        if (!isVehiclePolling) {
+          isVehiclePolling = true;
+          vehicleTimerId = setTimeout(vehiclePollingTask, OBA.Config.pollingInterval);
+        }
       },
  
       removeRoute: function(routeId) {
@@ -139,14 +148,17 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
  
           delete routeIdsToVehicleMarkers[routeId];
         }
+
+        if (numberOfRoutes <= 0) {
+            isVehiclePolling = false;
+            if (vehicleTimerId) {
+                clearTimeout(vehicleTimerId);
+            }
+        }
       },
  
       getCount: function() {
           return numberOfRoutes;
-      },
-      
-      anyRoutes: function() {
-        return numberOfRoutes > 0;
       },
     };
 };
