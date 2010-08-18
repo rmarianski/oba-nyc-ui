@@ -119,6 +119,11 @@ OBA.Tracker = function() {
       // this shouldn't have happened
       // this means that the filter didn't catch a duplicate route
       if (routeCollection.containsRoute(routeId)) {
+        var alreadyExistsMessage = '<p class="error">Route already added to map</p>';
+        var errNode = jQuery(alreadyExistsMessage);
+        errNode.appendTo(resultDiv).hide().fadeIn();
+        setTimeout(function() { errNode.hide(function() { errNode.remove(); }); },
+                   1000);
         return false;
       }
 
