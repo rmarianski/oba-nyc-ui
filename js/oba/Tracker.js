@@ -119,7 +119,7 @@ OBA.Tracker = function() {
       // this shouldn't have happened
       // this means that the filter didn't catch a duplicate route
       if (routeCollection.containsRoute(routeId)) {
-        return;
+        return false;
       }
 
       var clonedDiv = resultDiv.clone();
@@ -182,7 +182,6 @@ OBA.Tracker = function() {
             addSearchBehavior();
             addSearchControlBehavior();
             addExampleSearchBehavior();
-
             addStopsToMap();
         }
     };
