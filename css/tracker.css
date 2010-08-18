@@ -123,6 +123,14 @@ p.header a {
     padding-top: 5px;
 }
 
+#popup ul li.hasNotice {
+    color: red;
+}
+
+#popup ul li.hasNotice a {
+    color: red;
+}
+
 #popup ul.notices {
     padding-bottom: 5px;
 }

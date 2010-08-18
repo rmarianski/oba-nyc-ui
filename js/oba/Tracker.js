@@ -205,7 +205,7 @@ OBA.Tracker = function() {
         });
       });
     }
-    
+
     return {
         getMap: function() {
             return map;
@@ -216,8 +216,11 @@ OBA.Tracker = function() {
             addSearchControlBehavior();
             addExampleSearchBehavior();
             addStopsToMap();
+
+            OBA.State(map);
         }
     };
 };
 
 jQuery(document).ready(function() { OBA.Tracker().initialize(); });
+            

@@ -57,7 +57,13 @@ OBA.StopPopup = function(stopId, map) {
                 }
                 
                 for(var i = 0; i < route.distanceAway.length; i++) {
-                    service += '<li><a href="#">' + OBA.Util.truncate(route.description, 30) + '</a> (' + route.distanceAway[i][0] + ' stops, ' + route.distanceAway[i][1] + ' ft.)</li>'; 
+                    if(typeof route.serviceNotice !== 'undefined') {
+                        service += '<li class="hasNotice">';
+                    } else {
+                        service += '<li>';
+                    }
+                    
+                    service += '<a href="#">' + OBA.Util.truncate(route.description, 30) + '</a> (' + route.distanceAway[i][0] + ' stops, ' + route.distanceAway[i][1] + ' ft.)</li>'; 
                 }
            });
            
