@@ -142,11 +142,6 @@ OBA.Tracker = function() {
       var routeId = routeIdStr.substring("route-".length);
 
       if (routeCollection.containsRoute(routeId)) {
-        var alreadyExistsMessage = '<p class="error">Route already added to map</p>';
-        var errNode = jQuery(alreadyExistsMessage);
-        errNode.appendTo(resultDiv).hide().fadeIn();
-        setTimeout(function() { errNode.hide(function() { errNode.remove(); }); },
-                   1500);
         return false;
       }
 
