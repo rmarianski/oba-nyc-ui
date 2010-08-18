@@ -4,9 +4,9 @@ $vehicleId = $_GET["vehicleId"];
 
 $routeId = "no route";
 
-if (strstr($vehicleId, "M14D")) {
+if (strstr($vehicleId, "8213")) {
   $routeId = "M14D";
-} elseif (strstr($vehicleId, "M21C")) {
+} elseif (strstr($vehicleId, "8214")) {
   $routeId = "M21C";
 }
 

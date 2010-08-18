@@ -26,14 +26,24 @@
 #sidebar .stop,
 #sidebar .route {
   clear: both;
-  margin-top: 0.5em;
+  margin-top: 15px;
 }
 
 #sidebar .control {
   float: right;
+  clear: right;
   padding: 0;
-  font-size: 0.8em;
+  padding-top: 2px;
+  font-size: 9px;
   color: blue;
+}
+
+#sidebar #search .zoomToExtent {
+    display: none;
+}
+
+#sidebar .result ul {
+    padding: 0;
 }
 
 #sidebar a.control {
@@ -45,17 +55,17 @@
 }
 
 #sidebar .name {
-  font-size: 1.1em;
+  font-size: 14px;
   font-weight: bold;
   padding: 0;
 }
 
 #sidebar .description {
-  font-size: 0.9em;
+  font-size: 11px;
 }
 
 #sidebar .meta {
-  font-size: 0.8em;
+  font-size: 11px;
   color: #444;
 }
 
@@ -63,7 +73,7 @@
 	height: 200px;
 }
 
-#content #sidebar #current_layers p.header {
+#current_layers p.header {
 	padding: 5px;
 	padding-top: 7px;
 	padding-left: 15px;
@@ -74,6 +84,14 @@
 	background-repeat: repeat-x;
 }
 
+p.header a {
+	text-decoration: none;
+}
+
+#current_layers p#no-routes-displayed-message {
+    padding: 15px;
+}
+
 #content #map {
 	width: 659px;
 	height: 550px;
@@ -81,3 +99,37 @@
 	background-color: #EFEFEF;
 	border-left: 1px solid #ACACAC;
 }
+
+#content #map #popup {
+    font-size: 11px;
+}
+
+#popup p,
+#popup ul {
+    padding: 0;
+
+}
+
+#popup p.header {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#popup .meta {
+  color: #444;
+}
+
+#popup ul {
+    padding-top: 5px;
+}
+
+#popup ul.notices {
+    padding-bottom: 5px;
+}
+
+#popup ul.notices li {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    color: red;
+}
+

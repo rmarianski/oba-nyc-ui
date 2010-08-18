@@ -83,9 +83,9 @@ OBA.RouteCollection = (function() {
             
           var shape = new google.maps.Polyline({
               path: latlngs,
-              strokeColor: "#FF0000",
-              strokeOpacity: 1.0,
-              strokeWeight: 2
+              strokeColor: "#0000FF",
+              strokeOpacity: .5,
+              strokeWeight: 5
           });
             
           routeIdToShapes[routeId] = shape;

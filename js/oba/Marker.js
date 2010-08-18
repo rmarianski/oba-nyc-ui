@@ -4,7 +4,6 @@ OBA.Marker = function(entityId, latlng, map, popup) {
 
     var marker = new google.maps.Marker({
         position: new google.maps.LatLng(latlng[0], latlng[1]),
-        title: entityId,
         map: map
     });
 

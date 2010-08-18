@@ -73,11 +73,11 @@ OBA.Tracker = (function() {
       searchResultsList.empty();
 
       jQuery.each(json.searchResults, function(i, record) {
-        if (record.type === "stop") {
+        if (typeof record.stopId !== 'undefined') {
           searchResultsList.append(jQuery("<li></li>").append(makeStopElement(record)));
 
           anyResults = true;
-        } else if (record.type === "route") {
+        } else if (typeof record.routeId !== 'undefined') {
           // verify that we don't give a route search result
           // that's already displayed on the map
           if (OBA.RouteCollection.containsRoute(record.id)) {
@@ -89,7 +89,7 @@ OBA.Tracker = (function() {
           anyResults = true;
         }
       });
-
+      
       if (!anyResults)
         searchResultsList.append(jQuery("<li>There were no matches for your query.</li>"));
 
@@ -97,22 +97,40 @@ OBA.Tracker = (function() {
     }
           
     function makeStopElement(record) {
-      return jQuery('<div id="stop-' + record.id + '" class="stop"></div>')
-        .append('<a class="control showOnMap" href="#">Show on Map</a>')
-        .append('<p class="name">' + record.name + '</p>');
+      var $wrapper = jQuery('<div id="stop-' + record.stopId + '" class="stop result"></div>');
+      
+      $wrapper.append('<a class="control showOnMap" href="#">Show on Map</a>')
+         .append('<p class="name">' + record.name + '</p>');
+        
+      if(typeof record.routesAvailable !== 'undefined') {
+          var description = '<ul class="description">';
+          
+          jQuery.each(record.routesAvailable, function(routeId) {
+            var route = record.routesAvailable[routeId];
+
+            description += '<li>' + routeId + ' - ' + OBA.Util.truncate(route.description, 30) + '</li>';
+          });
+
+          description += '</ul>';
+          
+          $wrapper.append(jQuery(description));
+      }
+
+      return $wrapper;      
     }
 
     function makeRouteElement(record) {
-      return jQuery('<div id="route-' + record.id + '" class="route"></div>')
+      return jQuery('<div id="route-' + record.routeId + '" class="route result"></div>')
         .append('<a class="control addToMap" href="#">Add To Map</a>')
+        .append('<a class="control zoomToExtent" href="#">Zoom To Extent</a>')
         .append('<p class="name">' + record.name + '</p>')
-        .append('<p class="description">' + record.description + '</p>')
-        .append('<p class="meta">' + record.lastUpdate + '</p>');
+        .append('<p class="description">' + OBA.Util.truncate(record.description, 30) + '</p>');
     }
       
     function addSearchControlBehavior() {
       jQuery("#search .showOnMap").live("click", handleShowOnMap);
       jQuery("#search .addToMap").live("click", handleAddToMap);
+      jQuery("#search .zoomToExtent").live("click", handleZoomToExtent);
       jQuery("#displayed-routes-list .removeFromMap").live("click", handleRemoveFromMap);
     }
             
@@ -120,7 +138,7 @@ OBA.Tracker = (function() {
       var stopIdStr = jQuery(this).parent("div").attr("id");
       var stopId = stopIdStr.substring("stop-".length);
       var stopMarker = stopMarkers[stopId];
-    
+      
       if (!stopMarker)
         return false;
 
@@ -128,6 +146,12 @@ OBA.Tracker = (function() {
       stopMarker.showPopup();
 
       return false;
+    }
+
+    function handleZoomToExtent(e) {
+        // XXX FIXME
+
+        return false;
     }
 
     function handleAddToMap(e) {
@@ -142,7 +166,7 @@ OBA.Tracker = (function() {
       }
 
       var clonedDiv = resultDiv.clone();
-      var controlLink = clonedDiv.find("a.control");
+      var controlLink = clonedDiv.find("a.control.addToMap");
     
       controlLink.removeClass("addToMap");
       controlLink.addClass("removeFromMap");
@@ -159,7 +183,7 @@ OBA.Tracker = (function() {
         jQuery("#no-routes-displayed-message").hide();
         jQuery("#n-displayed-routes").text(OBA.RouteCollection.getCount());
       });
-
+        
       return false;
     }
 
@@ -172,7 +196,10 @@ OBA.Tracker = (function() {
       OBA.RouteCollection.removeRoute(routeId);
 
       // update text info on screen
-      jQuery("#no-routes-displayed-message").show();
+      if(OBA.RouteCollection.getCount() === 0) {
+          jQuery("#no-routes-displayed-message").show();
+      }
+    
       jQuery("#n-displayed-routes").text(OBA.RouteCollection.getCount());
 
       return false;
@@ -186,7 +213,8 @@ OBA.Tracker = (function() {
           return;
 
         jQuery.each(stops, function(i, stop) {
-          var marker = OBA.StopMarker(stop.stopId, stop.latlng, map);
+          var marker = OBA.StopMarker(stop.stopId, stop.latlng, map, stop.name);
+
           stopMarkers[stop.stopId] = marker;
         });
       });
