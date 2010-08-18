@@ -11,5 +11,8 @@ OBA.Config = {
     vehicleUrl: "vehicle.php",
 
     // milliseconds to wait in between polls for bus locations
-    pollingInterval: 5000
+    pollingInterval: 5000,
+
+    // image url
+    vehicleIcon: "img/vehicle.png"
 };

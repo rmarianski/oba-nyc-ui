@@ -40,5 +40,5 @@ OBA.StopMarker = function(stopId, latlng, map) {
 OBA.VehicleMarker = function(vehicleId, latlng, map) {
     return OBA.Marker(vehicleId, latlng, map,
         OBA.VehiclePopup(vehicleId, map),
-        "/img/vehicle.png");
+        OBA.Config.vehicleIcon);
 };
