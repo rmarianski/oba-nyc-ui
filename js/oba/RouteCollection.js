@@ -50,7 +50,7 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
           // helper function to add an element to a map where values are lists
           var addVehicleMarkerToRouteMap = function(routeId, vehicleMarker) {
             var vehicles = routeIdsToVehicleMarkers[routeId];
- 
+
             if (vehicles) {
               vehicles.push(vehicleMarker);
             } else {
@@ -70,8 +70,7 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
   
                 vehicleMarker.updatePosition(latlng);
                 vehicleMarker.addMarker();
-                // i don't think this is needed here
-                //addVehicleMarkerToRouteMap(routeId, vehicleMarker);
+                addVehicleMarkerToRouteMap(routeId, vehicleMarker);
               } else {
                 vehicleMarker = OBA.VehicleMarker(vehicle.vehicleId, vehicle.latlng, map);
                 vehicleMarkers[vehicle.vehicleId] = vehicleMarker;
