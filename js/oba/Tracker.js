@@ -1,32 +1,13 @@
 var OBA = window.OBA || {};
 
-// global for now until routecollection gets refactored
-var map = null;
-
-OBA.Tracker = (function() {
-    // reference to the map on the screen
-    //var map = null;
-    map = null;
+OBA.Tracker = function() {
 
     // stopid to stopMarkers
     var stopMarkers = {};
 
-    function createMap() {
-        var options = {
-    		zoom: 15,
-	       	mapTypeControl: false,
-    		center: new google.maps.LatLng(40.714346,-73.995409),
-	       	mapTypeId: google.maps.MapTypeId.ROADMAP
-    	};
-
-    	map = new google.maps.Map(document.getElementById("map"), options);
-
-        // for debugging
-        google.maps.event.addListener(map, "click", function(e) {
-          if (console && console.log)
-            console.log(e.latLng.lat() + "," + e.latLng.lng());
-        });
-    }
+    var mapNode = document.getElementById("map");
+    var routeCollection = OBA.RouteCollection(mapNode);
+    var map = routeCollection.getMap();
 
     function addExampleSearchBehavior() {
       var searchForm = jQuery("#search form");
@@ -80,7 +61,7 @@ OBA.Tracker = (function() {
         } else if (record.type === "route") {
           // verify that we don't give a route search result
           // that's already displayed on the map
-          if (OBA.RouteCollection.containsRoute(record.id)) {
+          if (routeCollection.containsRoute(record.id)) {
             return;
           }
 
@@ -137,7 +118,7 @@ OBA.Tracker = (function() {
 
       // this shouldn't have happened
       // this means that the filter didn't catch a duplicate route
-      if (OBA.RouteCollection.containsRoute(routeId)) {
+      if (routeCollection.containsRoute(routeId)) {
         return;
       }
 
@@ -153,11 +134,11 @@ OBA.Tracker = (function() {
         .hide().fadeIn();
 
       jQuery.getJSON(OBA.Config.routeShapeUrl, {routeId: routeId}, function(json) {
-        OBA.RouteCollection.addRoute(routeId, json);
+        routeCollection.addRoute(routeId, json);
         
         // update text info on screen
         jQuery("#no-routes-displayed-message").hide();
-        jQuery("#n-displayed-routes").text(OBA.RouteCollection.getCount());
+        jQuery("#n-displayed-routes").text(routeCollection.getCount());
       });
 
       return false;
@@ -169,11 +150,11 @@ OBA.Tracker = (function() {
       var routeId = routeIdStr.substring("route-".length);
 
       resultDiv.fadeOut("fast", function() { resultDiv.remove(); });
-      OBA.RouteCollection.removeRoute(routeId);
+      routeCollection.removeRoute(routeId);
 
       // update text info on screen
       jQuery("#no-routes-displayed-message").show();
-      jQuery("#n-displayed-routes").text(OBA.RouteCollection.getCount());
+      jQuery("#n-displayed-routes").text(routeCollection.getCount());
 
       return false;
     }
@@ -198,8 +179,6 @@ OBA.Tracker = (function() {
         },
         
         initialize: function() {
-            createMap();
-
             addSearchBehavior();
             addSearchControlBehavior();
             addExampleSearchBehavior();
@@ -207,6 +186,6 @@ OBA.Tracker = (function() {
             addStopsToMap();
         }
     };
-})();
+};
 
-jQuery(document).ready(OBA.Tracker.initialize);
+jQuery(document).ready(function() { OBA.Tracker().initialize(); });

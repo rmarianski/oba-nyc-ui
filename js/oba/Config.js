@@ -6,6 +6,8 @@ OBA.Config = {
     stopsUrl: "stops.php",
     stopUrl: "stop.php",
     vehiclesUrl:"vehicles.php",
-    vehicleUrl: "vehicle.php"
+    vehicleUrl: "vehicle.php",
+
+    debug: true
 };
 
