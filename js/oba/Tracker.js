@@ -225,7 +225,7 @@ OBA.Tracker = function() {
             addExampleSearchBehavior();
             addStopsToMap();
 
-            OBA.State(map);
+//            OBA.State(map);
         }
     };
 };
