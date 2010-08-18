@@ -182,11 +182,12 @@ OBA.Tracker = function() {
       routeCollection.removeRoute(routeId);
 
       // update text info on screen
-      if(OBA.RouteCollection.getCount() === 0) {
+      var nDisplayedRoutes = routeCollection.getCount();
+      if (nDisplayedRoutes <= 0) {
           jQuery("#no-routes-displayed-message").show();
       }
-    
-      jQuery("#n-displayed-routes").text(OBA.RouteCollection.getCount());
+
+      jQuery("#n-displayed-routes").text(nDisplayedRoutes);
 
       return false;
     }
