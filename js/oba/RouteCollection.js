@@ -49,18 +49,12 @@ OBA.RouteCollection = (function() {
               if (vehicleMarker) {
                 var latlng = new google.maps.LatLng(vehicle.latlng[0], vehicle.latlng[1]);
     
-                vehicleMarker.setPosition(latlng);
-        
-                if (!vehicleMarker.getMap()) {
-                  // route was added, removed, and added back
-                  // the markers already exist, but have just been removed from the map
-                  // we can reuse them and we only have to set their map reference
-                  vehicleMarker.setMap(map);
-            
-                  addVehicleMarkerToRouteMap(routeId, vehicleMarker);
-                }
+                vehicleMarker.updatePosition(latlng);
+                vehicleMarker.addMarker();
+                // i don't think this is needed here
+                //addVehicleMarkerToRouteMap(routeId, vehicleMarker);
               } else {
-                vehicleMarker = OBA.Marker.create(vehicle);
+                vehicleMarker = OBA.VehicleMarker(vehicle.vehicleId, vehicle.latlng, map);
                 vehicleMarkers[vehicle.vehicleId] = vehicleMarker;
 
                 addVehicleMarkerToRouteMap(routeId, vehicleMarker);
@@ -120,7 +114,7 @@ OBA.RouteCollection = (function() {
     
           if (vehicles) {
             jQuery.each(vehicles, function(i, vehicleMarker) {
-              vehicleMarker.setMap(null);
+              vehicleMarker.removeMarker();
             });
 
             delete routeIdsToVehicleMarkers[routeId];

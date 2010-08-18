@@ -1,51 +1,58 @@
 var OBA = window.OBA || {};
 
-OBA.Popup = (function() {
-    function makeStopPopupContent(json) {
-          return ("<p>" + json.stopId + "</p>" +
-                  "<p>" + json.lastUpdate + "</p>" +
-                  "<p>" + json.description + "</p>");
-    }
+OBA.Popup = function(map, fetchFn, markupFn) {
 
-    function makeVehiclePopupContent(json) {
-          return ("<p>" + json.vehicleId + "</p>" +
-                  "<p>" + json.lastUpdate + "</p>");
-    }
-
-    function showStopPopup(stopMarker, stopId) {
-        jQuery.getJSON(OBA.Config.stopUrl, {stopId: stopId}, function(json) {
-            var stop = json.stop;
-            var stopContent = makeStopPopupContent(stop);
-
-            var popup = new google.maps.InfoWindow({
-              content: stopContent
-            });
-
-            popup.open(marker.getMap(), stopMarker);
-         });
-    }
-
-    function showVehiclePopup(vehicleMarker, vehicleId) {
-        jQuery.getJSON(OBA.Config.vehicleUrl, {vehicleId: vehicleId}, function(json) {
-            var vehicle = json.vehicle;
-            var vehicleContent = makeVehiclePopupContent(vehicle);
-
-            var popup = new google.maps.InfoWindow({
-              content: vehicleContent
-            });
-    
-            popup.open(marker.getMap(), vehicleMarker);
-        });
-    }
+    var infowindow = null;
 
     return {
-        create: function(marker) {
-            if(marker.getType() === 'vehicle') {
-                showVehiclePopup(marker, marker.getEntityId());
-
-            } else if(marker.getType() === 'stop') {
-                showStopPopup(marker, marker.getEntityId());
-            }
+        show: function(marker) {
+            fetchFn(function(json) {
+                var markup = markupFn(json);
+                infowindow = new google.maps.InfoWindow({
+                    content: markup
+                });
+                infowindow.open(map, marker);
+            });
+        },
+        hide: function() {
+            if (infowindow)
+                infowindow.close();
         }
     };
-})();
+};
+
+// utilities? scope wrap to prevent global leak?
+function makeJsonFetcher(url, data) {
+    return function(callback) {
+        jQuery.getJSON(url, data, callback);
+    };
+}
+
+OBA.StopPopup = function(stopId, map) {
+
+    var generateStopMarkup = function(json) {
+        var stop = json.stop;
+        if (!stop) return "";
+        return ("<p>" + stop.stopId + "</p>" +
+                "<p>" + stop.lastUpdate + "</p>" +
+                "<p>" + stop.description + "</p>");
+    };
+
+    return OBA.Popup(
+        map,
+        makeJsonFetcher(OBA.Config.stopUrl, {stopId: stopId}),
+        generateStopMarkup);
+}
+
+OBA.VehiclePopup = function(vehicleId, map) {
+    var generateVehicleMarkup = function(json) {
+        var vehicle = json.vehicle;
+        if (!vehicle) return "";
+        return ("<p>" + vehicle.vehicleId + "</p>" +
+                "<p>" + vehicle.lastUpdate + "</p>");
+    };
+    return OBA.Popup(
+        map,
+        makeJsonFetcher(OBA.Config.vehicleUrl, {vehicleId: vehicleId}),
+        generateVehicleMarkup);
+};

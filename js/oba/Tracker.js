@@ -1,8 +1,12 @@
 var OBA = window.OBA || {};
 
+// global for now until routecollection gets refactored
+var map = null;
+
 OBA.Tracker = (function() {
     // reference to the map on the screen
-    var map = null;
+    //var map = null;
+    map = null;
 
     // stopid to stopMarkers
     var stopMarkers = {};
@@ -22,8 +26,6 @@ OBA.Tracker = (function() {
           if (console && console.log)
             console.log(e.latLng.lat() + "," + e.latLng.lng());
         });
-
-        return map;
     }
 
     function addExampleSearchBehavior() {
@@ -119,7 +121,7 @@ OBA.Tracker = (function() {
       var stopId = stopIdStr.substring("stop-".length);
       var stopMarker = stopMarkers[stopId];
     
-      if (! stopMarker)
+      if (!stopMarker)
         return false;
 
       // showing the popup automatically zooms to it
@@ -180,11 +182,12 @@ OBA.Tracker = (function() {
       jQuery.getJSON(OBA.Config.stopsUrl, {}, function(json) {
         var stops = json.stops;
 
-        if (! stops)
+        if (!stops)
           return;
 
         jQuery.each(stops, function(i, stop) {
-          stopMarkers[stop.stopId] = new OBA.Marker.create(stop);
+          var marker = OBA.StopMarker(stop.stopId, stop.latlng, map);
+          stopMarkers[stop.stopId] = marker;
         });
       });
     }

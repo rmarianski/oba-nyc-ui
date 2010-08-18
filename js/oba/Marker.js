@@ -1,68 +1,39 @@
 var OBA = window.OBA || {};
 
-OBA.Marker = (function() {
-    var marker = null;
+OBA.Marker = function(entityId, latlng, map, popup) {
 
-    var entityId = null;
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(latlng[0], latlng[1]),
+        title: entityId,
+        map: map
+    });
 
-    // 1 = stop, 2 = vehicle
-    var type = null;
-    
-    
-    
-    function makeStopMarker(stopId, latlng) {
-      marker = new google.maps.Marker({
-          position: new google.maps.LatLng(latlng[0], latlng[1]),
-          title: stopId
-      });
-          
-      type = 1;
-      entityId = stopId;
-   }
-
-   function makeVehicleMarker(vehicleId, latlng) {
-      marker = new google.maps.Marker({
-          position: new google.maps.LatLng(latlng[0], latlng[1]),
-          title: vehicleId
-      });
-          
-      type = 2;
-      entityId = vehicleId;
-   }
+    var showPopup = function() { popup.show(marker); };
+    google.maps.event.addListener(marker, "click", showPopup);
 
     return {
-       getType: function() {
-            return type;
-       },
-       
-       getMap: function() {
-            return marker.getMap();
-       },
-       
-       getEntityId: function() {
-            return entityId;
-       },
-    
-       showPopup: function() {
-        
-       },
+        showPopup: showPopup,
+        hidePopup: function() {
+            popup.hide();
+        },
+        addMarker: function() {
+            marker.setMap(map);
+        },
+        removeMarker: function() {
+            marker.setMap(null);
+        },
+        updatePosition: function(latlng) {
+            marker.setPosition(latlng);
+        }
+    };
+};
 
-       create: function(json, map) {
-            if(typeof json.stopId !== 'undefined') {
-                makeStopMarker(json.stopId, json.latlng);
-            } else if(typeof json.vehicleId !== 'undefined') {
-                makeVehicleMarker(json.vehicleId, json.latlng);
-            }
-            
-            if(marker !== null) {                
-                google.maps.event.addListener(marker, "click", function() {
-                    showPopup();
-                });
-            
-                marker.setMap(map);
-            }
-            
-            return marker;
-       }
-     }
-})();
+OBA.StopMarker = function(stopId, latlng, map) {
+    return OBA.Marker(stopId, latlng, map,
+        OBA.StopPopup(stopId, map));
+};
+
+OBA.VehicleMarker = function(vehicleId, latlng, map) {
+    return OBA.Marker(vehicleId, latlng, map,
+        OBA.VehiclePopup(vehicleId, map));
+};
