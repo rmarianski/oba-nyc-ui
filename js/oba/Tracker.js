@@ -112,7 +112,7 @@ OBA.Tracker = function() {
     function addSearchControlBehavior() {
       jQuery("#search .showOnMap").live("click", handleShowOnMap);
       jQuery("#search .addToMap").live("click", handleAddToMap);
-      jQuery("#search .zoomToExtent").live("click", handleZoomToExtent);
+      jQuery("#displayed-routes-list .zoomToExtent").live("click", handleZoomToExtent);
       jQuery("#displayed-routes-list .removeFromMap").live("click", handleRemoveFromMap);
     }
             
@@ -131,8 +131,13 @@ OBA.Tracker = function() {
     }
 
     function handleZoomToExtent(e) {
-        // XXX FIXME
+        var displayRouteDiv = jQuery(this).parent("div");
+        var routeIdStr = displayRouteDiv.attr("id");
+        var routeId = routeIdStr.substring("displayedroute-".length);
 
+        var latlngBounds = routeCollection.getBounds(routeId);
+        if (latlngBounds)
+            map.fitBounds(latlngBounds);
         return false;
     }
 

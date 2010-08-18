@@ -161,5 +161,18 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
       getCount: function() {
           return numberOfRoutes;
       },
+
+      getBounds: function(routeId) {
+          var shape = routeIdToShapes[routeId];
+          if (!shape) return null;
+
+          var latlngBounds = new google.maps.LatLngBounds();
+          var path = shape.getPath();
+          for (var i = 0; i < path.length; i++) {
+              var latlng = path.getAt(i);
+              latlngBounds.extend(latlng);
+          }
+          return latlngBounds;
+      }
     };
 };
