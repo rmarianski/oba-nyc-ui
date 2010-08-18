@@ -1,12 +1,17 @@
 var OBA = window.OBA || {};
 
-OBA.Marker = function(entityId, latlng, map, popup) {
+OBA.Marker = function(entityId, latlng, map, popup, icon) {
 
-    var marker = new google.maps.Marker({
+    var markerOptions = {
         position: new google.maps.LatLng(latlng[0], latlng[1]),
         title: entityId,
         map: map
-    });
+    };
+    if (typeof icon !== "undefined") {
+        markerOptions.icon = icon;
+    }
+
+    var marker = new google.maps.Marker(markerOptions);
 
     var showPopup = function() { popup.show(marker); };
     google.maps.event.addListener(marker, "click", showPopup);
@@ -35,5 +40,6 @@ OBA.StopMarker = function(stopId, latlng, map) {
 
 OBA.VehicleMarker = function(vehicleId, latlng, map) {
     return OBA.Marker(vehicleId, latlng, map,
-        OBA.VehiclePopup(vehicleId, map));
+        OBA.VehiclePopup(vehicleId, map),
+        "/img/vehicle.png");
 };
