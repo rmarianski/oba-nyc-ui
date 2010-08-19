@@ -159,13 +159,15 @@ OBA.Tracker = function() {
     }
 
     function handleZoomToExtent(e) {
-        var displayRouteDiv = jQuery(this).parent("div");
+        var displayRouteDiv = jQuery(this).parent().parent().parent("div");
         var routeIdStr = displayRouteDiv.attr("id");
         var routeId = routeIdStr.substring("displayedroute-".length);
 
         var latlngBounds = routeCollection.getBounds(routeId);
+
         if (latlngBounds)
             map.fitBounds(latlngBounds);
+
         return false;
     }
 
