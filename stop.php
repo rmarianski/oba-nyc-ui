@@ -14,7 +14,7 @@ if($stopId == "S000001") {
 $stop = array("stopId" => $stopId,
               "latlng" => $latlng,
               "name" => $name,
-              "lastUpdate" => "2008-07-17 at 09:24:17 PM",
+              "lastUpdate" => "1 minute ago",
               "routesAvailable" => array(
                         "M14A" => array(
                                 "description" => "14th Street Crosstown to LES/Delancey via Avenue A",

@@ -1,5 +1,7 @@
 <?php
 
+header("Content-type: text/json");
+
 function make_stop($stopId) {
     if($stopId == "S000001") {
         $name = "Mulberry and Canal";
@@ -13,7 +15,7 @@ function make_stop($stopId) {
     $stop = array("stopId" => $stopId,
                   "latlng" => $latlng,
                   "name" => $name,
-                  "lastUpdate" => "2008-07-17 at 09:24:17 PM",
+                  "lastUpdate" => "1 minute ago",
                   "routesAvailable" => array(
                         "M14A" => array(
                                 "description" => "14th Street Crosstown to LES/Delancey via Avenue A",
@@ -47,18 +49,24 @@ function make_stop($stopId) {
 }
 
 function make_route($name, $description) {
-  return array("routeId" => $name,
+  $route = array("routeId" => $name,
                "name" => $name,
                "description" => $description,
-               "lastUpdate" => "2008-07-17 at 09:24:17 PM",
+               "lastUpdate" => "1 minute ago"
              );
+             
+    if(rand(0, 10) % 2 == 0) {
+        $route["serviceNotice"] = "The $name is experiencing delays and rerouting due to construction on 2nd avenue.";
+    } 
+
+    return $route;
 }
 
 $results = array(
     make_route("M14D", "14th Street Crosstown via Avenue D"),
     make_route("M14A", "14th Street Crosstown via Avenue A"),
     make_stop("S000001"),
-    make_stop("S000002"),
+    make_stop("S000002")
     );
 
 echo json_encode(array("searchResults" => $results));

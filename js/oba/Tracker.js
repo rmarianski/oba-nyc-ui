@@ -35,11 +35,23 @@ OBA.Tracker = function() {
         e.preventDefault();
 
         var formData = jQuery(this).serialize();
+        var searchResultsList = jQuery("#search");
 
-        jQuery.getJSON(searchAction, formData, function(json) {
-          exampleSearches.remove();
+        jQuery.ajax({
+            beforeSend: function(xhr) {
+                searchResultsList.addClass("loading");                
+            },
+            complete: function(xhr, s) {
+                searchResultsList.removeClass("loading");
+            },
+            success: function(data, s, xhr) {
+                exampleSearches.remove();
 
-          populateSearchResults(json);
+                populateSearchResults(data);
+            },
+            type: "json",
+            data: formData,
+            url: searchAction
         });
       });
     }
@@ -65,7 +77,7 @@ OBA.Tracker = function() {
           if (routeCollection.containsRoute(record.routeId)) {
               // if we already have the route displayed
               // its control should be disabled
-              routeElement.find("a.control").addClass("disabled");
+              routeElement.find(".controls a").addClass("disabled");
           }
 
           anyResults = true;
@@ -79,11 +91,16 @@ OBA.Tracker = function() {
     }
           
     function makeStopElement(record) {
-      var $wrapper = jQuery('<div id="stop-' + record.stopId + '" class="stop result"></div>');
+      var $el = jQuery('<div id="stop-' + record.stopId + '" class="stop result"></div>')
+                      .append('<p class="name">' + record.name + '</p>');
       
-      $wrapper.append('<a class="control showOnMap" href="#">Show on Map</a>')
-         .append('<p class="name">' + record.name + '</p>');
-        
+                   
+      var $controls = jQuery('<ul></ul>').addClass("controls")
+                .append('<li><a class="showOnMap" href="#">Show on Map</a></li>');
+      
+      $el.append($controls);
+
+      // display routes available at this stop
       if(typeof record.routesAvailable !== 'undefined') {
           var description = '<ul class="description">';
           
@@ -95,18 +112,29 @@ OBA.Tracker = function() {
 
           description += '</ul>';
           
-          $wrapper.append(jQuery(description));
+          $el.append(jQuery(description));
       }
 
-      return $wrapper;      
+      return $el;      
     }
 
     function makeRouteElement(record) {
-      return jQuery('<div id="route-' + record.routeId + '" class="route result"></div>')
-        .append('<a class="control addToMap" href="#">Add To Map</a>')
-        .append('<a class="control zoomToExtent" href="#">Zoom To Extent</a>')
-        .append('<p class="name">' + record.name + '</p>')
-        .append('<p class="description">' + OBA.Util.truncate(record.description, 30) + '</p>');
+      var $el = jQuery('<div id="route-' + record.routeId + '" class="route result' + ((typeof record.serviceNotice !== 'undefined') ? ' hasNotice' : '') + '"></div>')
+                .append('<p class="name">' + record.name + '</p>')
+                .append('<p class="description">' + OBA.Util.truncate(record.description, 30) + '</p>')
+             
+      var $controls = jQuery('<ul></ul>').addClass("controls")
+                .append('<li><a class="addToMap" href="#">Add To Map</a></li>')
+                .append('<li><a class="zoomToExtent" href="#">Zoom To Extent</a></li>')
+
+      $el.append($controls);
+                
+/*            
+        if(typeof record.serviceNotice !== 'undefined') {    
+            $el.append('<p class="notice">' + record.serviceNotice + '</p>');
+        }
+*/        
+        return $el;
     }
       
     function addSearchControlBehavior() {
@@ -117,7 +145,7 @@ OBA.Tracker = function() {
     }
             
     function handleShowOnMap(e) {
-      var stopIdStr = jQuery(this).parent("div").attr("id");
+      var stopIdStr = jQuery(this).parent().parent().parent("div").attr("id");
       var stopId = stopIdStr.substring("stop-".length);
       var stopMarker = stopMarkers[stopId];
       
@@ -138,7 +166,7 @@ OBA.Tracker = function() {
 
     function handleAddToMap(e) {
       var controlLink = jQuery(this);
-      var resultDiv = controlLink.parent("div");
+      var resultDiv = controlLink.parent().parent().parent("div");
       var routeIdStr = resultDiv.attr("id");
       var routeId = routeIdStr.substring("route-".length);
 
@@ -153,7 +181,7 @@ OBA.Tracker = function() {
       clonedDiv.attr("id", "displayedroute-" + routeId);
 
       // update the control link class to alter the event fired
-      var clonedControlLink = clonedDiv.find("a.control.addToMap");
+      var clonedControlLink = clonedDiv.find(".addToMap");
       clonedControlLink.removeClass("addToMap");
       clonedControlLink.addClass("removeFromMap");
       clonedControlLink.html("Remove from map");
@@ -178,7 +206,7 @@ OBA.Tracker = function() {
     }
 
     function handleRemoveFromMap(e) {
-      var displayRouteDiv = jQuery(this).parent("div");
+      var displayRouteDiv = jQuery(this).parent().parent().parent("div");
       var routeIdStr = displayRouteDiv.attr("id");
       var routeId = routeIdStr.substring("displayedroute-".length);
 
@@ -187,7 +215,7 @@ OBA.Tracker = function() {
 
       // find the control link for the matching search result element
       // and re-enable it
-      jQuery("#route-" + routeId + " a.control.disabled").removeClass("disabled");
+      jQuery("#route-" + routeId + " a.disabled").removeClass("disabled");
 
       // update text info on screen
       var nDisplayedRoutes = routeCollection.getCount();
@@ -226,7 +254,8 @@ OBA.Tracker = function() {
             addExampleSearchBehavior();
             addStopsToMap();
 
-//            OBA.State(map);
+//          XXX FIXME
+//          OBA.State(map);
         }
     };
 };

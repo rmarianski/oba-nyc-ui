@@ -2,80 +2,93 @@
 	height: 350px;
 }
 
-#content #sidebar #search form label {
+#search form {
+    padding: 15px;
+}
+
+#search form label {
 	display: block;
 	padding-bottom: 3px;
 }
 
-#content #sidebar #search form input {
+#search form input {
 	font-size: 15px;
 	font-family: inherit;
 	width: 260px;
 }
 
-#content #sidebar #search form p.small {
+#search form p.small {
 	padding-top: 5px;
 	font-size: 10px;
 }
 
-#search-results p,
-#displayed-routes p {
-  padding: 0;
+#example-searches,
+#search-results,
+#displayed-routes-list {
+    padding: 0px;
+    margin: 0px;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
-#sidebar .stop,
-#sidebar .route {
-  clear: both;
-  margin-top: 15px;
+#displayed-routes-list {
+    padding-top: 15px;
 }
 
-#sidebar .control {
-  float: right;
-  clear: right;
-  padding: 0;
-  padding-top: 2px;
-  font-size: 9px;
-  color: blue;
+#search-results .zoomToExtent {
+    display: none;
 }
 
-#sidebar .control.disabled {
+.controls {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+
+.controls li {
+    padding-top: 2px;
+}
+
+.controls a.disabled {
   color: gray;
   text-decoration: none;
 }
 
-#sidebar a.control.disabled:hover {
+.controls a.disabled:hover {
   cursor: default;
 }
 
-#sidebar #search .zoomToExtent {
-    display: none;
+.loading {
+	background-image: url('img/spinner.gif');
+	background-repeat: no-repeat;
+    background-position: 125px 165px;
 }
 
-#sidebar .result ul {
-    padding: 0;
+.result {
+    width: 270px;
+    clear: both;
+    margin-bottom: 15px;
+    font-size: 11px;
+    position: relative;
 }
 
-#sidebar a.control {
-  text-decoration: underline;
-}
-
-#sidebar a.control:hover {
-  text-decoration: none;
-}
-
-#sidebar .name {
+.result .name {
   font-size: 14px;
   font-weight: bold;
   padding: 0;
 }
 
-#sidebar .description {
-  font-size: 11px;
+.result .meta {
+  color: #444;
 }
 
-#sidebar .meta {
-  font-size: 11px;
-  color: #444;
+.result.hasNotice p.name {
+    color: red;
+}
+
+.result.hasNotice p.notice {
+    margin-top: 5px;
+    color: red;
 }
 
 #content #sidebar #current_layers {
@@ -93,13 +106,17 @@
 	background-repeat: repeat-x;
 }
 
-p.header a {
+#current_layers p.header a {
+    color: #444;
 	text-decoration: none;
 }
 
 #current_layers p#no-routes-displayed-message {
     padding: 15px;
+    font-size: 14px;
 }
+
+
 
 #content #map {
 	width: 659px;
@@ -109,7 +126,7 @@ p.header a {
 	border-left: 1px solid #ACACAC;
 }
 
-#content #map #popup {
+#map #popup {
     font-size: 11px;
 }
 
@@ -119,7 +136,7 @@ p.header a {
 
 }
 
-#popup p.header {
+#popup .header {
     font-size: 14px;
     font-weight: bold;
 }
@@ -132,10 +149,8 @@ p.header a {
     padding-top: 5px;
 }
 
-#popup ul li.hasNotice {
-    color: red;
-}
-
+#popup p.header.hasNotice,
+#popup ul li.hasNotice,
 #popup ul li.hasNotice a {
     color: red;
 }

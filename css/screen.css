@@ -4,8 +4,10 @@ body {
 	background-color: #999999;
 }
 
-a {
-	color: #444444;
+a,
+a:visited,
+a:hover {
+	color: blue;
 }
 
 a:hover {
@@ -32,10 +34,10 @@ a:hover {
 }
 
 #header h1 {
-	padding: 20px;
-	padding-top: 30px;
-
-	height: 18px;
+    position: absolute;
+    top: 30px;
+    left: 20px;
+    
 	font-size: 18px;
 	color: #FFFFFF;
 }
@@ -76,16 +78,9 @@ a:hover {
 	float: left;
 }
 
-#content p, #content ul {
-	padding: 15px;
-	padding-bottom: 0px;
-}
-
-#content ul {
-	padding-top: 5px;
-}
-
 #footer {
+    height: 32px;
+    
 	padding: 10px;
 	padding-left: 15px;
 	padding-right: 15px;

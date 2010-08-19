@@ -33,7 +33,7 @@ $route = array("routeId" => $routeid,
                "polylineEnvelope" => array(40.70998702652973,-73.99193285711671, 40.71912753071832,-73.99034498937989),
                "name" => $routeId,
                "description" => $description,
-               "lastUpdate" => "2008-07-17 at 09:24:17 PM",
+               "lastUpdate" => "1 minute ago"
                );
 
 echo json_encode(array("route" => $route));

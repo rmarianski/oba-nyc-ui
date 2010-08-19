@@ -45,9 +45,10 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
         jQuery.getJSON(OBA.Config.vehiclesUrl, {routeIds: routesToSerialize}, function(json) {
           var vehicles = json.vehicles;
  
-          if (!vehicles)
+          if (!vehicles) {
             return;
- 
+          }
+          
           // helper function to add an element to a map where values are lists
           var addVehicleMarkerToRouteMap = function(routeId, vehicleMarker) {
             var vehicles = routeIdsToVehicleMarkers[routeId];
@@ -84,8 +85,12 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
     }; // requestRoutes
 
     var vehiclePollingTask = function() {
-        if (!isVehiclePolling) return;
+        if (!isVehiclePolling) {
+            return;
+        }
+
         requestRoutes();
+
         vehicleTimerId = setTimeout(vehiclePollingTask, OBA.Config.pollingInterval);
     };
  
@@ -111,7 +116,7 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
         var shape = new google.maps.Polyline({
               path: latlngs,
               strokeColor: "#0000FF",
-              strokeOpacity: .5,
+              strokeOpacity: 0.5,
               strokeWeight: 5
         });
           
@@ -159,6 +164,6 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
  
       getCount: function() {
           return numberOfRoutes;
-      },
+      }
     };
 };
