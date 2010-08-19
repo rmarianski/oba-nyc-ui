@@ -83,6 +83,8 @@ OBA.StopPopup = function(stopId, map) {
     
             searchInput.val(id);
             searchForm.submit();        
+
+            return false;
         });
 
         return bubble;
@@ -135,6 +137,8 @@ OBA.VehiclePopup = function(vehicleId, map) {
     
             searchInput.val(id);
             searchForm.submit();
+
+            return false;
         });
         
         return bubble;
