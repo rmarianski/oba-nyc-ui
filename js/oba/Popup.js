@@ -14,7 +14,7 @@ OBA.Popup = function(map, fetchFn, bubbleNodeFn) {
                                     .appendTo("#map");
                                                         
                 $wrappedContent = $wrappedContent.css("width", 250).css("height", $wrappedContent.height());
-            
+                        
                 infowindow.setContent($wrappedContent.get(0));                
                 infowindow.open(map, marker);
             });

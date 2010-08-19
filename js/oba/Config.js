@@ -4,6 +4,7 @@ OBA.Config = {
     debug: true,
 
     // urls to fetch various data
+    searchUrl: "search.php",
     routeShapeUrl: "route.php",
     stopsUrl: "stops.php",
     stopUrl: "stop.php",

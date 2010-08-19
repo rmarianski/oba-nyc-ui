@@ -37,6 +37,7 @@ OBA.Tracker = function() {
         var formData = jQuery(this).serialize();
         var searchResultsList = jQuery("#search");
 
+
         jQuery.ajax({
             beforeSend: function(xhr) {
                 searchResultsList.addClass("loading");                
@@ -49,7 +50,7 @@ OBA.Tracker = function() {
 
                 populateSearchResults(data);
             },
-            type: "json",
+            dataType: "json",
             data: formData,
             url: searchAction
         });
