@@ -30,7 +30,6 @@ if ($routeid == "M14D") {
 
 $route = array("routeId" => $routeid,
                "polyline" => $polyline,
-               "polylineEnvelope" => array(40.70998702652973,-73.99193285711671, 40.71912753071832,-73.99034498937989),
                "name" => $routeId,
                "description" => $description,
                "lastUpdate" => "1 minute ago"

@@ -6,7 +6,7 @@ $routeId = "no route";
 
 if (strstr($vehicleId, "8213") ||strstr($vehicleId, "8210") ) {
   $routeId = "M14D";
-  $description = "14th Street Crosstown via Avenue A";
+  $description = "14th Street Crosstown via Avenue D";
 } elseif (strstr($vehicleId, "8214") || strstr($vehicleId, "8215")) {
   $routeId = "M14A";
   $description = "14th Street Crosstown via Avenue A";
@@ -21,13 +21,15 @@ $vehicle = array("vehicleId" => $vehicleId,
                                     "S000001" => array(
                                           "name" => "Mulberry and Canal",
                                            // stops, distance in feet
-                                          "distanceAway" => array(2, 100)
+                                          "distanceAway" => array(2, 100),
+                                          "lastUpdate" => "1 minute ago" 
                                     ),                                    
                                     "S000002" => array(
                                           "name" => "Allen and Delancey",
                                            // stops, distance in feet
-                                          "distanceAway" => array(3, 100)
-                                    )
+                                          "distanceAway" => array(3, 100),
+                                          "lastUpdate" => "1 minute ago"
+                                     )
                                 )
                  );
 
