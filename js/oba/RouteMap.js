@@ -1,6 +1,6 @@
 var OBA = window.OBA || {};
 
-OBA.RouteCollection = function(mapNode, mapOptions) {
+OBA.RouteMap = function(mapNode, mapOptions) {
 
     var defaultMapOptions = {
       zoom: 15,
