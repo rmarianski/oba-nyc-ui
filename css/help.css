@@ -1,5 +1,5 @@
 #sidebar {
-	height: auto;
+    float: left;
 }
 
 #sidebar .help_topic {
@@ -8,23 +8,20 @@
 
 #sidebar .help_topic h2 {
 	font-size: 14px;
+	padding-bottom: 5px;
 }
 
 #text {
-	height: auto;
-	float: left;
-	width: 559px;
+    padding: 15px;
+    margin-left: 300px;
+    
 	border-left: 1px solid #ACACAC;
 }
 
 #text p {
-	padding-left: 15px;
-	padding-top: 0px;
 	padding-bottom: 15px;
 }
 
 #text h2 {
-	padding-left: 15px;
-	padding-top: 15px;
-	padding-bottom: 15px;
+	padding-bottom: 5px;
 }

@@ -1,12 +1,16 @@
 var OBA = window.OBA || {};
 
-OBA.Popup = function(map, fetchFn, bubbleNodeFn) {
-    var infowindow = null;
+OBA.theInfoWindow = null;
 
+OBA.Popup = function(map, fetchFn, bubbleNodeFn) {
+    
     return {
-        show: function(marker) {        
+        show: function(marker) {    
+            if(OBA.theInfoWindow)
+                OBA.theInfoWindow.close();
+            
             fetchFn(function(json) {
-                infowindow = new google.maps.InfoWindow();
+                OBA.theInfoWindow = new google.maps.InfoWindow();
     
                 // we need to append this node to the map for the size to be calculated properly
                 $wrappedContent = jQuery('<div id="popup"></div>')
@@ -15,14 +19,9 @@ OBA.Popup = function(map, fetchFn, bubbleNodeFn) {
                                                         
                 $wrappedContent = $wrappedContent.css("width", 250).css("height", $wrappedContent.height());
                         
-                infowindow.setContent($wrappedContent.get(0));                
-                infowindow.open(map, marker);
+                OBA.theInfoWindow.setContent($wrappedContent.get(0));                
+                OBA.theInfoWindow.open(map, marker);
             });
-        },
-
-        hide: function() {
-            if(infowindow)
-                infowindow.close();
         }
     };
 };
@@ -76,7 +75,9 @@ OBA.StopPopup = function(stopId, map) {
     
         $bubble = jQuery(header + notices + service);
 
-        $bubble.find("a.searchLink").click(function() {
+        $bubble.find("a.searchLink").click(function(e) {
+            e.preventDefault();
+        
             var id = jQuery(this).attr("rel");
             var searchForm = jQuery("#search form");
             var searchInput = jQuery("#search input[type=text]");
@@ -128,7 +129,9 @@ OBA.VehiclePopup = function(vehicleId, map) {
 
         $bubble = jQuery(header + notices + nextStops);
         
-        $bubble.find("a.searchLink").click(function() {
+        $bubble.find("a.searchLink").click(function(e) {
+            e.preventDefault();
+
             var id = jQuery(this).attr("rel");
             var searchForm = jQuery("#search form");
             var searchInput = jQuery("#search input[type=text]");
