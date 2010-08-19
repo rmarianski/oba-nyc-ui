@@ -73,7 +73,7 @@ OBA.StopPopup = function(stopId, map) {
         
         notices += '</ul>';
     
-        $bubble = jQuery(header + notices + service);
+        bubble = jQuery(header + notices + service);
 
         $bubble.find("a.searchLink").click(function(e) {
             e.preventDefault();
@@ -84,9 +84,11 @@ OBA.StopPopup = function(stopId, map) {
     
             searchInput.val(id);
             searchForm.submit();        
+
+            return false;
         });
 
-        return $bubble;
+        return bubble;
     };
 
     return OBA.Popup(
@@ -127,7 +129,7 @@ OBA.VehiclePopup = function(vehicleId, map) {
            nextStops += '</ul>';
         }
 
-        $bubble = jQuery(header + notices + nextStops);
+        bubble = jQuery(header + notices + nextStops);
         
         $bubble.find("a.searchLink").click(function(e) {
             e.preventDefault();
@@ -137,10 +139,12 @@ OBA.VehiclePopup = function(vehicleId, map) {
             var searchInput = jQuery("#search input[type=text]");
     
             searchInput.val(id);
-            searchForm.submit();        
+            searchForm.submit();
+
+            return false;
         });
         
-        return $bubble;
+        return bubble;
     };
     
     return OBA.Popup(

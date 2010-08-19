@@ -6,8 +6,8 @@ OBA.Tracker = function() {
     var stopMarkers = {};
 
     var mapNode = document.getElementById("map");
-    var routeCollection = OBA.RouteCollection(mapNode);
-    var map = routeCollection.getMap();
+    var routeMap = OBA.RouteMap(mapNode);
+    var map = routeMap.getMap();
 
     function addExampleSearchBehavior() {
       var searchForm = jQuery("#search form");
@@ -77,7 +77,7 @@ OBA.Tracker = function() {
           var routeElement = makeRouteElement(record);
           searchResultsList.append(jQuery("<li></li>").append(routeElement));
 
-          if (routeCollection.containsRoute(record.routeId)) {
+          if (routeMap.containsRoute(record.routeId)) {
               // if we already have the route displayed
               // its control should be disabled
               routeElement.find(".controls a").addClass("disabled");
@@ -166,7 +166,7 @@ OBA.Tracker = function() {
         var routeIdStr = displayRouteDiv.attr("id");
         var routeId = routeIdStr.substring("displayedroute-".length);
 
-        var latlngBounds = routeCollection.getBounds(routeId);
+        var latlngBounds = routeMap.getBounds(routeId);
 
         if (latlngBounds)
             map.fitBounds(latlngBounds);
@@ -180,7 +180,7 @@ OBA.Tracker = function() {
       var routeIdStr = resultDiv.attr("id");
       var routeId = routeIdStr.substring("route-".length);
 
-      if (routeCollection.containsRoute(routeId)) {
+      if (routeMap.containsRoute(routeId)) {
         return false;
       }
 
@@ -205,11 +205,11 @@ OBA.Tracker = function() {
       controlLink.addClass("disabled");
 
       jQuery.getJSON(OBA.Config.routeShapeUrl, {routeId: routeId}, function(json) {
-        routeCollection.addRoute(routeId, json);
+        routeMap.addRoute(routeId, json);
         
         // update text info on screen
         jQuery("#no-routes-displayed-message").hide();
-        jQuery("#n-displayed-routes").text(routeCollection.getCount());
+        jQuery("#n-displayed-routes").text(routeMap.getCount());
       });
         
       return false;
@@ -221,14 +221,14 @@ OBA.Tracker = function() {
       var routeId = routeIdStr.substring("displayedroute-".length);
 
       displayRouteDiv.fadeOut("fast", function() { displayRouteDiv.remove(); });
-      routeCollection.removeRoute(routeId);
+      routeMap.removeRoute(routeId);
 
       // find the control link for the matching search result element
       // and re-enable it
       jQuery("#route-" + routeId + " a.disabled").removeClass("disabled");
 
       // update text info on screen
-      var nDisplayedRoutes = routeCollection.getCount();
+      var nDisplayedRoutes = routeMap.getCount();
       if (nDisplayedRoutes <= 0) {
           jQuery("#no-routes-displayed-message").show();
       }
