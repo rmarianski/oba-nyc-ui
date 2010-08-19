@@ -71,7 +71,8 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
                 var latlng = new google.maps.LatLng(vehicle.latlng[0], vehicle.latlng[1]);
   
                 vehicleMarker.updatePosition(latlng);
-                vehicleMarker.addMarker();
+                if (!vehicleMarker.isDisplayed())
+                    vehicleMarker.addMarker();
                 addVehicleMarkerToRouteMap(routeId, vehicleMarker);
               } else {
                 vehicleMarker = OBA.VehicleMarker(vehicle.vehicleId, vehicle.latlng, map);
@@ -164,6 +165,19 @@ OBA.RouteCollection = function(mapNode, mapOptions) {
  
       getCount: function() {
           return numberOfRoutes;
+      },
+
+      getBounds: function(routeId) {
+          var shape = routeIdToShapes[routeId];
+          if (!shape) return null;
+
+          var latlngBounds = new google.maps.LatLngBounds();
+          var path = shape.getPath();
+          for (var i = 0; i < path.length; i++) {
+              var latlng = path.getAt(i);
+              latlngBounds.extend(latlng);
+          }
+          return latlngBounds;
       }
     };
 };
