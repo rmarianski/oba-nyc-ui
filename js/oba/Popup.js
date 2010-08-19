@@ -74,9 +74,9 @@ OBA.StopPopup = function(stopId, map) {
         
         notices += '</ul>';
     
-        $bubble = jQuery(header + notices + service);
+        bubble = jQuery(header + notices + service);
 
-        $bubble.find("a.searchLink").click(function() {
+        bubble.find("a.searchLink").click(function() {
             var id = jQuery(this).attr("rel");
             var searchForm = jQuery("#search form");
             var searchInput = jQuery("#search input[type=text]");
@@ -85,7 +85,7 @@ OBA.StopPopup = function(stopId, map) {
             searchForm.submit();        
         });
 
-        return $bubble;
+        return bubble;
     };
 
     return OBA.Popup(
@@ -126,18 +126,18 @@ OBA.VehiclePopup = function(vehicleId, map) {
            nextStops += '</ul>';
         }
 
-        $bubble = jQuery(header + notices + nextStops);
+        bubble = jQuery(header + notices + nextStops);
         
-        $bubble.find("a.searchLink").click(function() {
+        bubble.find("a.searchLink").click(function() {
             var id = jQuery(this).attr("rel");
             var searchForm = jQuery("#search form");
             var searchInput = jQuery("#search input[type=text]");
     
             searchInput.val(id);
-            searchForm.submit();        
+            searchForm.submit();
         });
         
-        return $bubble;
+        return bubble;
     };
     
     return OBA.Popup(
