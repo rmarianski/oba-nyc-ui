@@ -75,7 +75,7 @@ OBA.StopPopup = function(stopId, map) {
     
         bubble = jQuery(header + notices + service);
 
-        $bubble.find("a.searchLink").click(function(e) {
+        bubble.find("a.searchLink").click(function(e) {
             e.preventDefault();
         
             var id = jQuery(this).attr("rel");
@@ -131,7 +131,7 @@ OBA.VehiclePopup = function(vehicleId, map) {
 
         bubble = jQuery(header + notices + nextStops);
         
-        $bubble.find("a.searchLink").click(function(e) {
+        bubble.find("a.searchLink").click(function(e) {
             e.preventDefault();
 
             var id = jQuery(this).attr("rel");
