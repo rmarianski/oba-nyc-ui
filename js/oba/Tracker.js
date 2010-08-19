@@ -35,15 +35,17 @@ OBA.Tracker = function() {
         e.preventDefault();
 
         var formData = jQuery(this).serialize();
-        var searchResultsList = jQuery("#search");
-
+        var search = jQuery("#search");
+        var searchResultsList = jQuery("#search-results");
 
         jQuery.ajax({
             beforeSend: function(xhr) {
-                searchResultsList.addClass("loading");                
+                searchResultsList.empty();
+                
+                search.addClass("loading");                
             },
             complete: function(xhr, s) {
-                searchResultsList.removeClass("loading");
+                search.removeClass("loading");
             },
             success: function(data, s, xhr) {
                 exampleSearches.remove();
