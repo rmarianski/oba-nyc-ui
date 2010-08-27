@@ -1,15 +1,20 @@
 #search {
+    position: relative;
     height: 60%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
 }
 
 #search.loading {
 	background-image: url('img/spinner.gif');
 	background-repeat: no-repeat;
-    background-position: 125px 165px;
+    background-position: 125px 50%;
 }
 
 #search form {
-    padding: 15px;
+	padding: 15px;
+	width: 270px;
 }
 
 #search form label {
@@ -20,7 +25,7 @@
 #search form input {
 	font-size: 15px;
 	font-family: inherit;
-	width: 260px;
+	width: 97%;
 }
 
 #search form p.small {
@@ -33,6 +38,19 @@
 #displayed-routes-list {
     padding-left: 15px;
     padding-right: 15px;
+}
+
+#displayed-routes {
+    height: 20%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+}
+
+#displayed-routes.loading {
+	background-image: url('img/spinner.gif');
+	background-repeat: no-repeat;
+    background-position: 125px 50%;
 }
 
 #displayed-routes-list {
@@ -63,11 +81,11 @@
 }
 
 .result {
-    width: 270px;
+    position: relative;
+    width: 100%;
     clear: both;
     margin-bottom: 15px;
     font-size: 11px;
-    position: relative;
 }
 
 .result .name {
@@ -90,6 +108,7 @@
 }
 
 #current_layers p.header {
+	width: 100%;
 	padding: 5px;
 	padding-top: 7px;
 	padding-left: 15px;
@@ -113,15 +132,16 @@
 #content #sidebar {
     float: left;
 
-    height: 550px;
+    height: 100%;
     width: 300px;
 }
 
 #content #map {
-    height: 550px;
-            
-	background-color: #EFEFEF;
-	border-left: 1px solid #ACACAC;
+    position: relative;
+    height: 100%;
+
+    background-color: #EFEFEF;
+    border-left: 1px solid #ACACAC;
 }
 
 #map #popup {

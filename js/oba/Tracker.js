@@ -1,6 +1,14 @@
 var OBA = window.OBA || {};
 
 OBA.Tracker = function() {
+    // elements for the resize handler
+    var theWindow = null;
+    var headerDiv = null;
+    var footerDiv = null;
+    var contentDiv = null;
+    var sidebarHeaders = null;
+    var displayedRoutesDiv = null;
+    var searchResultsDiv = null;
 
     // stopid to stopMarkers
     var stopMarkers = {};
@@ -8,6 +16,7 @@ OBA.Tracker = function() {
     var mapNode = document.getElementById("map");
     var routeMap = OBA.RouteMap(mapNode);
     var map = routeMap.getMap();
+    var state = OBA.State(map, routeMap, makeRouteElement);
 
     function addExampleSearchBehavior() {
       var searchForm = jQuery("#search form");
@@ -87,21 +96,21 @@ OBA.Tracker = function() {
         }
       });
       
-      if (!anyResults)
+      if (!anyResults) {
         searchResultsList.append(jQuery("<li>There were no matches for your query.</li>"));
-
+	  }
+	
       searchResultsList.hide().fadeIn();
     }
           
     function makeStopElement(record) {
-      var $el = jQuery('<div id="stop-' + record.stopId + '" class="stop result"></div>')
+      var el = jQuery('<div id="stop-' + record.stopId + '" class="stop result"></div>')
                       .append('<p class="name">' + record.name + '</p>');
-      
-                   
-      var $controls = jQuery('<ul></ul>').addClass("controls")
+                         
+      var controls = jQuery('<ul></ul>').addClass("controls")
                 .append('<li><a class="showOnMap" href="#">Show on Map</a></li>');
       
-      $el.append($controls);
+      el.append(controls);
 
       // display routes available at this stop
       if(typeof record.routesAvailable !== 'undefined') {
@@ -115,29 +124,24 @@ OBA.Tracker = function() {
 
           description += '</ul>';
           
-          $el.append(jQuery(description));
+          el.append(jQuery(description));
       }
 
-      return $el;      
+      return el;      
     }
 
     function makeRouteElement(record) {
-      var $el = jQuery('<div id="route-' + record.routeId + '" class="route result' + ((typeof record.serviceNotice !== 'undefined') ? ' hasNotice' : '') + '"></div>')
+      var el = jQuery('<div id="route-' + record.routeId + '" class="route result' + ((typeof record.serviceNotice !== 'undefined') ? ' hasNotice' : '') + '"></div>')
                 .append('<p class="name">' + record.name + '</p>')
                 .append('<p class="description">' + OBA.Util.truncate(record.description, 30) + '</p>')
              
-      var $controls = jQuery('<ul></ul>').addClass("controls")
+      var controls = jQuery('<ul></ul>').addClass("controls")
                 .append('<li><a class="addToMap" href="#">Add To Map</a></li>')
                 .append('<li><a class="zoomToExtent" href="#">Zoom To Extent</a></li>')
 
-      $el.append($controls);
+      el.append(controls);
                 
-/*            
-        if(typeof record.serviceNotice !== 'undefined') {    
-            $el.append('<p class="notice">' + record.serviceNotice + '</p>');
-        }
-*/        
-        return $el;
+      return el;
     }
       
     function addSearchControlBehavior() {
@@ -148,13 +152,15 @@ OBA.Tracker = function() {
     }
             
     function handleShowOnMap(e) {
-      var stopIdStr = jQuery(this).parent().parent().parent("div").attr("id");
+	  var controlLink = jQuery(this);
+      var stopIdStr = controlLink.parent().parent().parent("div").attr("id");
       var stopId = stopIdStr.substring("stop-".length);
       var stopMarker = stopMarkers[stopId];
       
-      if (!stopMarker)
+      if (!stopMarker) {
         return false;
-
+	  }
+	
       // showing the popup automatically zooms to it
       stopMarker.showPopup();
 
@@ -168,9 +174,10 @@ OBA.Tracker = function() {
 
         var latlngBounds = routeMap.getBounds(routeId);
 
-        if (latlngBounds)
+        if (latlngBounds) {
             map.fitBounds(latlngBounds);
-
+		}
+		
         return false;
     }
 
@@ -204,19 +211,23 @@ OBA.Tracker = function() {
       // user from clicking on it twice
       controlLink.addClass("disabled");
 
-      jQuery.getJSON(OBA.Config.routeShapeUrl, {routeId: routeId}, function(json) {
-        routeMap.addRoute(routeId, json);
+      jQuery.getJSON(OBA.Config.routeShapeUrl, OBA.Util.serializeArray(new Array(routeId), "routeId"), function(json) {
+        routeMap.addRoute(routeId, json.routes[0]);
         
         // update text info on screen
         jQuery("#no-routes-displayed-message").hide();
         jQuery("#n-displayed-routes").text(routeMap.getCount());
+
+	  	// update hash state
+        state.saveState();
       });
-        
+
       return false;
     }
 
     function handleRemoveFromMap(e) {
-      var displayRouteDiv = jQuery(this).parent().parent().parent("div");
+	  var controlLink = jQuery(this);
+      var displayRouteDiv = controlLink.parent().parent().parent("div");
       var routeIdStr = displayRouteDiv.attr("id");
       var routeId = routeIdStr.substring("displayedroute-".length);
 
@@ -229,11 +240,15 @@ OBA.Tracker = function() {
 
       // update text info on screen
       var nDisplayedRoutes = routeMap.getCount();
+
       if (nDisplayedRoutes <= 0) {
           jQuery("#no-routes-displayed-message").show();
       }
 
       jQuery("#n-displayed-routes").text(nDisplayedRoutes);
+
+	  // update hash state
+      state.saveState();
 
       return false;
     }
@@ -242,9 +257,10 @@ OBA.Tracker = function() {
       jQuery.getJSON(OBA.Config.stopsUrl, {}, function(json) {
         var stops = json.stops;
 
-        if (!stops)
+        if (!stops) {
           return;
-
+		}
+		
         jQuery.each(stops, function(i, stop) {
           var marker = OBA.StopMarker(stop.stopId, stop.latlng, map, stop.name);
 
@@ -253,22 +269,44 @@ OBA.Tracker = function() {
       });
     }
 
+    function addResizeBehavior() {
+		theWindow = jQuery(window);
+		headerDiv = jQuery("#header");
+		footerDiv = jQuery("#footer");
+		contentDiv = jQuery("#content");
+
+		sidebarHeaders = jQuery("#sidebar p.header");
+		displayedRoutesDiv = jQuery("#displayed-routes");
+		searchResultsDiv = jQuery("#search")
+	
+		function resize() {
+			var h = theWindow.height() - footerDiv.height() - headerDiv.height();
+
+			contentDiv.height(h);
+
+			searchResultsDiv.height(Math.ceil(h * .60 - sidebarHeaders.outerHeight()));
+			displayedRoutesDiv.height(Math.floor(h * .40));
+		}
+	
+		// call when the window is resized
+		theWindow.resize(resize);
+
+		// call upon initial load
+		resize();
+
+		// now that we're resizing, we can hide any body overflow/scrollbars
+		jQuery("body").css("overflow", "hidden");
+	}
+
     return {
-        getMap: function() {
-            return map;
-        },
-        
         initialize: function() {
             addSearchBehavior();
             addSearchControlBehavior();
             addExampleSearchBehavior();
             addStopsToMap();
-
-//          XXX FIXME
-//          OBA.State(map);
+	    	addResizeBehavior();
         }
     };
 };
 
 jQuery(document).ready(function() { OBA.Tracker().initialize(); });
-            
