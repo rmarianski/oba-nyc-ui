@@ -18,16 +18,18 @@ $vehicle = array("vehicleId" => $vehicleId,
                  "routeId" => $routeId,
                  "poorAccuracy" => false,
                  "nextStops" => array(
-                                    "S000001" => array(
+                                    array(
+                                          "vehicleId" => "S000001",
                                           "name" => "Mulberry and Canal",
                                            // stops, distance in feet
-                                          "distanceAway" => array(2, 100),
+                                          "distanceAway" => array("stops"=>2, "feet"=>100),
                                           "lastUpdate" => "1 minute ago" 
                                     ),                                    
-                                    "S000002" => array(
+                                    array(
+                                          "vehicleId" => "S000002",
                                           "name" => "Allen and Delancey",
                                            // stops, distance in feet
-                                          "distanceAway" => array(3, 100),
+                                          "distanceAway" => array("stops"=>3, "feet"=>100),
                                           "lastUpdate" => "1 minute ago"
                                      )
                                 )

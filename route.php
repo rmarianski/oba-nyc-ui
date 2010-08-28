@@ -29,8 +29,8 @@ if ($routeid == "M14D") {
 }
 
 $route = array("routeId" => $routeid,
-               "polyline" => $polyline,
-               "name" => $routeId,
+               "polyLine" => $polyline,
+               "name" => $routeid,
                "description" => $description,
                "lastUpdate" => "1 minute ago"
                );

@@ -16,32 +16,34 @@ $stop = array("stopId" => $stopId,
               "name" => $name,
               "lastUpdate" => "1 minute ago",
               "routesAvailable" => array(
-                        "M14A" => array(
-                                "description" => "14th Street Crosstown to LES/Delancey via Avenue A",
-                                "distanceAway" => array(
-                                    // stops, distance in feet
-                                    array(2, 100),
-                                    array(3, 2500)       
-                                )
+                        array(
+                              "routeId" => "M14A",
+                              "description" => "14th Street Crosstown to LES/Delancey via Avenue A",
+                              "distanceAway" => array(
+                                  // stops, distance in feet
+                                  array("stops"=>2, "feet"=>100),
+                                  array("stops"=>3, "feet"=>2500)       
+                              )
                         ),                          
 
-                        "M14D" => array(
-                                "description" => "14th Street Crosstown to LES/Delancey via Avenue D",
-                                "distanceAway" => array(
-                                    // stops, distance in feet
-                                    array(2, 100),
-                                    array(3, 2500)       
-                                )
+                        array(
+                              "routeId" => "M14D",
+                              "description" => "14th Street Crosstown to LES/Delancey via Avenue D",
+                              "distanceAway" => array(
+                                  // stops, distance in feet
+                                  array("stops"=>2, "feet"=>100),
+                                  array("stops"=>3, "feet"=>2500)       
+                              )
                         )                                        
                     )
               );
 
         if(rand(0, 10) % 2 == 0) {
-            $stop["routesAvailable"]["M14D"]["serviceNotice"] = "The M14D is experiencing delays and rerouting due to construction on 2nd avenue.";
+            $stop["routesAvailable"][1]["serviceNotice"] = "The M14D is experiencing delays and rerouting due to construction on 2nd avenue.";
         } 
         
         if(rand(0, 10) % 3 == 0) {
-            $stop["routesAvailable"]["M14A"]["serviceNotice"] = "The M14A is experiencing delays because of a sick passenger.";
+            $stop["routesAvailable"][0]["serviceNotice"] = "The M14A is experiencing delays because of a sick passenger.";
         } 
  
 echo json_encode(array("stop" => $stop));

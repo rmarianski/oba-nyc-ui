@@ -1,9 +1,20 @@
+// Copyright 2010, OpenPlans
+// Licensed under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
 var OBA = window.OBA || {};
 
 OBA.Tracker = function() {
-
-    // stopid to stopMarkers
-    var stopMarkers = {};
 
     var mapNode = document.getElementById("map");
     var routeMap = OBA.RouteMap(mapNode);
@@ -65,7 +76,6 @@ OBA.Tracker = function() {
 
       var anyResults = false;
       var searchResultsList = jQuery("#search-results");
-
       searchResultsList.empty();
 
       jQuery.each(json.searchResults, function(i, record) {
@@ -94,50 +104,50 @@ OBA.Tracker = function() {
     }
           
     function makeStopElement(record) {
-      var $el = jQuery('<div id="stop-' + record.stopId + '" class="stop result"></div>')
-                      .append('<p class="name">' + record.name + '</p>');
+      var el = jQuery('<div id="stop-' + record.stopId + '" class="stop result"></div>')
+                      .append('<p class="name">' + OBA.Util.truncate(record.name, 25) + '</p>');
       
                    
-      var $controls = jQuery('<ul></ul>').addClass("controls")
+      var controls = jQuery('<ul></ul>').addClass("controls")
                 .append('<li><a class="showOnMap" href="#">Show on Map</a></li>');
       
-      $el.append($controls);
+      el.append(controls);
 
       // display routes available at this stop
       if(typeof record.routesAvailable !== 'undefined') {
           var description = '<ul class="description">';
           
-          jQuery.each(record.routesAvailable, function(routeId) {
-            var route = record.routesAvailable[routeId];
+          jQuery.each(record.routesAvailable, function(i, route) {
+        	var routeId = route.routeId;
 
             description += '<li>' + routeId + ' - ' + OBA.Util.truncate(route.description, 30) + '</li>';
           });
 
           description += '</ul>';
           
-          $el.append(jQuery(description));
+          el.append(jQuery(description));
       }
 
-      return $el;      
+      return el;      
     }
 
     function makeRouteElement(record) {
-      var $el = jQuery('<div id="route-' + record.routeId + '" class="route result' + ((typeof record.serviceNotice !== 'undefined') ? ' hasNotice' : '') + '"></div>')
-                .append('<p class="name">' + record.name + '</p>')
+      var el = jQuery('<div id="route-' + record.routeId + '" class="route result' + ((typeof record.serviceNotice !== 'undefined') ? ' hasNotice' : '') + '"></div>')
+                .append('<p class="name">' + OBA.Util.truncate(record.name, 25) + '</p>')
                 .append('<p class="description">' + OBA.Util.truncate(record.description, 30) + '</p>')
              
-      var $controls = jQuery('<ul></ul>').addClass("controls")
+      var controls = jQuery('<ul></ul>').addClass("controls")
                 .append('<li><a class="addToMap" href="#">Add To Map</a></li>')
                 .append('<li><a class="zoomToExtent" href="#">Zoom To Extent</a></li>')
 
-      $el.append($controls);
+      el.append(controls);
                 
 /*            
         if(typeof record.serviceNotice !== 'undefined') {    
-            $el.append('<p class="notice">' + record.serviceNotice + '</p>');
+            el.append('<p class="notice">' + record.serviceNotice + '</p>');
         }
 */        
-        return $el;
+        return el;
     }
       
     function addSearchControlBehavior() {
@@ -148,17 +158,10 @@ OBA.Tracker = function() {
     }
             
     function handleShowOnMap(e) {
+      e.preventDefault();
       var stopIdStr = jQuery(this).parent().parent().parent("div").attr("id");
       var stopId = stopIdStr.substring("stop-".length);
-      var stopMarker = stopMarkers[stopId];
-      
-      if (!stopMarker)
-        return false;
-
-      // showing the popup automatically zooms to it
-      stopMarker.showPopup();
-
-      return false;
+      routeMap.showStop(stopId);
     }
 
     function handleZoomToExtent(e) {
@@ -238,21 +241,6 @@ OBA.Tracker = function() {
       return false;
     }
 
-    function addStopsToMap() {
-      jQuery.getJSON(OBA.Config.stopsUrl, {}, function(json) {
-        var stops = json.stops;
-
-        if (!stops)
-          return;
-
-        jQuery.each(stops, function(i, stop) {
-          var marker = OBA.StopMarker(stop.stopId, stop.latlng, map, stop.name);
-
-          stopMarkers[stop.stopId] = marker;
-        });
-      });
-    }
-
     return {
         getMap: function() {
             return map;
@@ -262,10 +250,6 @@ OBA.Tracker = function() {
             addSearchBehavior();
             addSearchControlBehavior();
             addExampleSearchBehavior();
-            addStopsToMap();
-
-//          XXX FIXME
-//          OBA.State(map);
         }
     };
 };
