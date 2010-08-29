@@ -192,6 +192,8 @@ OBA.Tracker = function() {
         return false;
       }
 
+      jQuery("#no-routes-displayed-message").hide();
+
       // clone the search result element to place in the routes displayed list
       var clonedDiv = resultDiv.clone();
 
@@ -216,7 +218,6 @@ OBA.Tracker = function() {
         routeMap.addRoute(routeId, json.routes[0]);
         
         // update text info on screen
-        jQuery("#no-routes-displayed-message").hide();
         jQuery("#n-displayed-routes").text(routeMap.getCount());
 
 	  	// update hash state

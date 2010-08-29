@@ -13,7 +13,7 @@
 /* under the License. */
 
 #search {
-    height: 90px;
+    height: 85px;
 	border-bottom: 1px solid #DFDFDF;
 }
 
@@ -30,7 +30,7 @@
 #search form input {
 	font-size: 15px;
 	font-family: inherit;
-	width: 97%;
+	width: 265px;
 }
 
 #search form p.small {

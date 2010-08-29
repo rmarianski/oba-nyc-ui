@@ -16,7 +16,7 @@ var OBA = window.OBA || {};
 
 OBA.RouteMap = function(mapNode, mapOptions) {
     var defaultMapOptions = {
-      zoom: 15,
+      zoom: 12,
       mapTypeControl: false,
       center: new google.maps.LatLng(40.70988943430561,-73.96564720877076),
       mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -98,8 +98,10 @@ OBA.RouteMap = function(mapNode, mapOptions) {
                 var latlng = new google.maps.LatLng(vehicle.latLng[0], vehicle.latLng[1]);
   
                 vehicleMarker.updatePosition(latlng);
+
                 if (!vehicleMarker.isDisplayed())
                     vehicleMarker.addMarker();
+
                 addVehicleMarkerToRouteMap(routeId, vehicleMarker);
               } else {
                 vehicleMarker = OBA.VehicleMarker(vehicle.vehicleId, vehicle.latLng, map);
@@ -138,14 +140,16 @@ OBA.RouteMap = function(mapNode, mapOptions) {
             // keep track of the new ids that came in so we can remove the old ones
             // that are no longer shown
             var newStopIds = {};
+
             jQuery.each(stops, function(i, stop) {
                 var stopId = stop.stopId;
             	
                 newStopIds[stopId] = stopId;
             	
             	var marker = stopMarkers[stopId];
+
             	if (marker) {
-            	    marker.updatePosition(stop.latlng);
+            	    marker.updatePosition(new google.maps.LatLng(stop.latlng[0], stop.latlng[1]));
             	} else {
             	    marker = OBA.StopMarker(stop.stopId, stop.latlng, map, stop.name);
             	    stopMarkers[stopId] = marker;
