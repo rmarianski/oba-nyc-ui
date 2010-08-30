@@ -19,14 +19,14 @@ $vehicle = array("vehicleId" => $vehicleId,
                  "poorAccuracy" => false,
                  "nextStops" => array(
                                     array(
-                                          "vehicleId" => "S000001",
+                                          "stopId" => "S000001",
                                           "name" => "Mulberry and Canal",
                                            // stops, distance in feet
                                           "distanceAway" => array("stops"=>2, "feet"=>100),
                                           "lastUpdate" => "1 minute ago" 
                                     ),                                    
                                     array(
-                                          "vehicleId" => "S000002",
+                                          "stopId" => "S000002",
                                           "name" => "Allen and Delancey",
                                            // stops, distance in feet
                                           "distanceAway" => array("stops"=>3, "feet"=>100),

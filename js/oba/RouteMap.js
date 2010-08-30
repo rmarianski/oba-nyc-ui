@@ -76,10 +76,12 @@ OBA.RouteMap = function(mapNode, mapOptions) {
             if (vehicles) {
               var alreadyThere = false;
               var markerId = vehicleMarker.getId();
+
               jQuery.each(vehicles, function(i, vehicle) {
                 if (vehicle.getId() === markerId)
                   alreadyThere = true;
               });
+
               if (!alreadyThere)
                 vehicles.push(vehicleMarker);
             } else {

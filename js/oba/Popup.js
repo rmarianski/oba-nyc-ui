@@ -156,7 +156,7 @@ OBA.VehiclePopup = function(vehicleId, map) {
             var id = jQuery(this).attr("rel");
             var searchForm = jQuery("#search form");
             var searchInput = jQuery("#search input[type=text]");
-    
+
             searchInput.val(id);
             searchForm.submit();
 
