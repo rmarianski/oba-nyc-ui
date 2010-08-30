@@ -18,6 +18,7 @@ OBA.RouteMap = function(mapNode, mapOptions) {
     var defaultMapOptions = {
       zoom: 12,
       mapTypeControl: false,
+	  navigationControlOptions: { style: google.maps.NavigationControlStyle.SMALL },
       center: new google.maps.LatLng(40.70988943430561,-73.96564720877076),
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };

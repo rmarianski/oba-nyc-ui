@@ -17,7 +17,6 @@ var OBA = window.OBA || {};
 OBA.theInfoWindow = null;
 
 OBA.Popup = function(map, fetchFn, bubbleNodeFn) {
-    
     return {
         show: function(marker) {    
             if(OBA.theInfoWindow)
@@ -50,10 +49,13 @@ function makeJsonFetcher(url, data) {
 OBA.StopPopup = function(stopId, map) {
     var parseStopId = function(stopId) {
         var idx = stopId.indexOf("_");
+
         if (idx === -1)
             return stopId;
+
         return stopId.substring(idx + 1);
     };
+
     var generateStopMarkup = function(json) {
         var stop = json.stop;
         
@@ -66,6 +68,7 @@ OBA.StopPopup = function(stopId, map) {
             
         var service = '';           
         var notices = '<ul class="notices">';
+
         if(typeof stop.routesAvailable !== 'undefined') {
             service += '<p>This stop serves:</p><ul>';       
 

@@ -15,6 +15,5 @@ OBA.Config = {
     pollingInterval: 5000,
 
     // image url
-    vehicleIcon: "img/vehicle.png",
-    stopIcon: "img/stop.png"
+    vehicleIcon: "img/vehicle.png"
 };
