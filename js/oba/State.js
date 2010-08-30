@@ -143,8 +143,7 @@ OBA.State = function(map, routeMap, makeRouteFn) {
     }    
 
 	// register to be notified when map changes
-    google.maps.event.addListener(map, "zoom_changed", saveState);
-    google.maps.event.addListener(map, "dragend", saveState);
+    google.maps.event.addListener(map, "idle", saveState);
 
 	// setup hash tag change listener
     jQuery.history.init(loadState);
